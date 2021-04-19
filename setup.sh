@@ -145,3 +145,4 @@ echo -e "${TICK} Git global configuration (David Christensen <randomparity@gmail
 echo -e "${TICK} Setup complete, logout/login to enable changes"
 
 # ToDo: Why does script create ~/src/dotfiles/powerline/powerline symlink?
+# ToDo: What if powerline installed system-wide??  How to handle?

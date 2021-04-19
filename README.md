@@ -13,3 +13,6 @@ Tested distributions:
  - [ ] Ubuntu 16.04
  - [x] Ubuntu 18.04
  - [x] Ubuntu 20.04
+
+ToDo:
+ - [ ] Test with system-wide powerline installation

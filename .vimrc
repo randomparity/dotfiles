@@ -54,7 +54,7 @@ set history=50
 set hlsearch		" Highlight matching search terms
 set incsearch		" do incremental searching
 set laststatus=2
-set list
+set nolist
 set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:·
 set nobackup
 set noswapfile		" http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
@@ -73,7 +73,7 @@ nnoremap <C-l> <C-w>l
 " More intuitive ctags matching
 nnoremap <C-]> g<C-]>
 
-" Show function list
+" Show function list side window
 nnoremap <C-l> :TlistToggle<CR>
 
 " Map NERDTree viewport to CTRL+t

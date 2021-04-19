@@ -125,18 +125,24 @@ fi
 
 # Install powerline if present
 if command -v python3 >/dev/null 2>&1; then
+  PYTHON_SITE_PATH=`python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'`
   PYTHON_LOCAL_SITE_PATH=`python3 -m site --user-site`
-  if [ -f $PYTHON_LOCAL_SITE_PATH/powerline/bindings/bash/powerline.sh ]; then
-    if command -v powerline-daemon > /dev/null 2>&1; then
-      # ToDo: How do we know this is here?
-      $HOME/.local/bin/powerline-daemon -q
-      # Need this exported for use by tmux later
+  if command -v powerline-daemon > /dev/null 2>&1; then
+    # ToDo: How to restart powerline-daemon??
+    powerline-daemon -q
+    # Check for system-wide powerline install first, don't want to mess with
+    # virtualenv at this point. 
+    # ToDo: What if neither of these exist??
+    if [ -f $PYTHON__SITE_PATH/powerline/bindings/bash/powerline.sh ]; then
+      export POWERLINE_LOC=$PYTHON_SITE_PATH/powerline
+    elif [ -f $PYTHON_LOCAL_SITE_PATH/powerline/bindings/bash/powerline.sh ]; then
       export POWERLINE_LOC=$PYTHON_LOCAL_SITE_PATH/powerline
-      POWERLINE_CONFIG_COMMAND=powerline-config
-      POWERLINE_BASH_CONTINUATION=1
-      POWERLINE_BASH_SELECT=1
-      source $POWERLINE_LOC/bindings/bash/powerline.sh
     fi
+    # Need this exported for use by tmux later
+    POWERLINE_CONFIG_COMMAND=powerline-config
+    POWERLINE_BASH_CONTINUATION=1
+    POWERLINE_BASH_SELECT=1
+    source $POWERLINE_LOC/bindings/bash/powerline.sh
   fi
 fi
 
