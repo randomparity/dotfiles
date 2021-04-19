@@ -9,7 +9,8 @@ if [ -f /etc/os-release ]; then
     # freedesktop.org and systemd
     . /etc/os-release
     OS=$NAME
-    VER=$VERSION_ID
+    VER=$VERSION
+    ID=$ID
 elif type lsb_release >/dev/null 2>&1; then
     # linuxbase.org
     OS=$(lsb_release -si)
@@ -35,7 +36,8 @@ else
     OS=$(uname -s)
     VER=$(uname -r)
 fi
-echo -e "${INFO} $OS $VER"
+echo -e "Running on ${INFO} $OS $VER [$ID]"
+
 
 # Check for important packages
 PACKAGES=()
@@ -55,9 +57,21 @@ fi
 
 if ! command -v ctags &> /dev/null; then
   echo -e "${CROSS} Ctags check"
-  PACKAGES+=("exuberant-ctags")
+  if [ $ID == "centos" ]; then
+    PACKAGES+=("ctags")
+  elif [ $ID == "ubuntu" ]; then
+    PACKAGES+=("exuberant-ctags")
+  fi
+  # ToDo: What to do for other distros??
 else
   echo -e "${TICK} Ctags check"
+fi
+
+if ! command -v tmux &> /dev/null; then
+  echo -e "${CROSS} Tmux check"
+  PACKAGES+=("tmux")
+else
+  echo -e "${TICK} Tmux check"
 fi
 
 if ! command -v python3 &> /dev/null; then
@@ -74,14 +88,18 @@ else
   echo -e "${TICK} Pip3 check"
 fi
 
+# ToDo: Give option to install here
 if (( ${#PACKAGES[@]} > 0 )); then
-  if [ $OS == "Ubuntu" ]; then
-    echo -e "${INFO} Run 'sudo apt install ${PACKAGES[@]}'"
+  if [ $ID == "centos" ]; then
+    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+    exit 1
+  elif [ $ID == "ubuntu" ]; then
+    echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
     exit 1
   fi
 fi
-  
-# Unconditionally install powerline locally
+
+# Known dependencies met, install powerline and symlink config files
 # ToDo: Check for install error here
 if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
   echo -e "${TICK} Powerline install"
