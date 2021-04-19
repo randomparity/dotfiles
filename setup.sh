@@ -36,7 +36,7 @@ else
     OS=$(uname -s)
     VER=$(uname -r)
 fi
-echo -e "Running on ${INFO} $OS $VER [$ID]"
+echo -e "${INFO} Found $OS $VER [$ID]"
 
 
 # Check for important packages
