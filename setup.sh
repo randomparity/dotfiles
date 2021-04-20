@@ -4,6 +4,10 @@
 SCRIPT_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source COLOR_TABLE
 
+OS="unknown"
+VER="unknown"
+ID="unknown"
+
 # Check for OS distro and version
 if [ -f /etc/os-release ]; then
     # freedesktop.org and systemd
@@ -37,7 +41,6 @@ else
     VER=$(uname -r)
 fi
 echo -e "${INFO} Found $OS $VER [$ID]"
-
 
 # Check for important packages
 PACKAGES=()
@@ -91,6 +94,9 @@ fi
 # ToDo: Give option to install here
 if (( ${#PACKAGES[@]} > 0 )); then
   if [ $ID == "centos" ]; then
+    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+    exit 1
+  elif [ $ID == "rhel" ]; then
     echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
     exit 1
   elif [ $ID == "ubuntu" ]; then
