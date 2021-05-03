@@ -27,3 +27,15 @@ alias dbld=_dbld $@
 # Microk8s aliases
 alias mkctl="microk8s kubectl"
 
+# Use Vagrant with libvirt on Ubuntu
+alias vagrant='
+  mkdir -p ~/.vagrant.d/{boxes,data,tmp}; \
+  docker run -it --rm \
+    -e LIBVIRT_DEFAULT_URI \
+    -v /var/run/libvirt/:/var/run/libvirt/ \
+    -v ~/.vagrant.d:/.vagrant.d \
+    -v $(pwd):$(pwd) \
+    -w $(pwd) \
+    --network host \
+    vagrantlibvirt/vagrant-libvirt:latest \
+    vagrant'
