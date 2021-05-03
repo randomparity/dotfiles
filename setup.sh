@@ -42,24 +42,28 @@ else
 fi
 echo -e "${INFO} Found $OS $VER [$ID]"
 
+
+CURL_CHECK="Checking for curl"
 # Check for important packages
 PACKAGES=()
 if ! command -v curl &> /dev/null; then
-  echo -e "${CROSS} Curl check"
+  echo -e "${CROSS} $CURL_CHECK"
   PACKAGES+=("curl")
 else
-  echo -e "${TICK} Curl check"
+  echo -e "${TICK} $CURL_CHECK"
 fi
 
+VIM_CHECK="Checking for vim"
 if ! command -v vim &> /dev/null; then
-  echo -e "${CROSS} Vim check"
+  echo -e "${CROSS} $VIM_CHECK"
   PACKAGES+=("vim")
 else
-  echo -e "${TICK} Vim check"
+  echo -e "${TICK} $VIM_CHECK"
 fi
 
+CTAGS_CHECK="Checking for ctags"
 if ! command -v ctags &> /dev/null; then
-  echo -e "${CROSS} Ctags check"
+  echo -e "${CROSS} $CTAGS_CHECK"
   if [ $ID == "centos" ]; then
     PACKAGES+=("ctags")
   elif [ $ID == "ubuntu" ]; then
@@ -67,28 +71,31 @@ if ! command -v ctags &> /dev/null; then
   fi
   # ToDo: What to do for other distros??
 else
-  echo -e "${TICK} Ctags check"
+  echo -e "${TICK} $CTAGS_CHECK"
 fi
 
+TMUX_CHECK="Checking for tmux"
 if ! command -v tmux &> /dev/null; then
-  echo -e "${CROSS} Tmux check"
+  echo -e "${CROSS} $TMUX_CHECK"
   PACKAGES+=("tmux")
 else
-  echo -e "${TICK} Tmux check"
+  echo -e "${TICK} $TMUX_CHECK"
 fi
 
+PYTHON_CHECK="Checking for python3"
 if ! command -v python3 &> /dev/null; then
-  echo -e "${CROSS} Python3 check"
+  echo -e "${CROSS} $PYTHON_CHECK"
   PACKAGES+=("python3")
 else
-  echo -e "${TICK} Python3 check"
+  echo -e "${TICK} $PYTHON_CHECK"
 fi
 
+PIP_CHECK="Checking for pip3"
 if ! command -v pip3 &> /dev/null; then
-  echo -e "${CROSS} Pip3 check"
+  echo -e "${CROSS} $PIP_CHECK"
   PACKAGES+=("python3-pip")
 else
-  echo -e "${TICK} Pip3 check"
+  echo -e "${TICK} $PIP_CHECK"
 fi
 
 # ToDo: Give option to install here
@@ -128,6 +135,7 @@ else
 fi
 
 # Symlink all of our dotfiles to the home directory
+# ToDo: Check for existing backups, request user input to overwrite
 for f in .vimrc .bashrc .bash_aliases .bash_profile .tmux.conf .gdbinit .dircolors;
 do
   # ToDo: How to handle pre-existing .backup files?
