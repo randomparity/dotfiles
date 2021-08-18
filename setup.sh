@@ -110,6 +110,7 @@ if (( ${#PACKAGES[@]} > 0 )); then
     echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
     exit 1
   fi
+  echo -e "${CROSS} Setup incomplete, resolve dependencies and run setup again"
 fi
 
 # Known dependencies met, install powerline and symlink config files
