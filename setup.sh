@@ -66,6 +66,8 @@ if ! command -v ctags &> /dev/null; then
   echo -e "${CROSS} $CTAGS_CHECK"
   if [ $ID == "centos" ]; then
     PACKAGES+=("ctags")
+  elif [ $ID == "rhel" ]; then
+    PACKAGES+=("ctags")
   elif [ $ID == "ubuntu" ]; then
     PACKAGES+=("exuberant-ctags")
   fi
