@@ -53,6 +53,21 @@ else
 fi
 echo -e "${INFO} Found $OS $VER [$ID]"
 
+if [ $ID == "centos" ]; then
+  :
+elif [ $ID == "rhel" ]; then
+  :
+elif [ $ID == "fedora" ]; then
+  :
+elif [ $ID == "ubuntu" ]; then
+  :
+elif [ $ID == "debian" ]; then
+  :
+else
+  echo -e "${CROSS} Validating OS distro failed, $SCRIPT_NAME must be modified"
+  exit 1
+fi
+
 
 CURL_CHECK="Checking for curl"
 # Check for important packages
@@ -67,7 +82,18 @@ fi
 VIM_CHECK="Checking for vim"
 if ! command -v vim &> /dev/null; then
   echo -e "${CROSS} $VIM_CHECK"
-  PACKAGES+=("vim")
+  if [ $ID == "centos" ]; then
+    PACKAGES+=("vim")
+  elif [ $ID == "rhel" ]; then
+    PACKAGES+=("vim")
+  elif [ $ID == "fedora" ]; then
+    PACKAGES+=("vim")
+  elif [ $ID == "ubuntu" ]; then
+    PACKAGES+=("vim")
+  elif [ $ID == "debian" ]; then
+    PACKAGES+=("vim-nox")
+  fi
+  # ToDo: What to do for other distros??
 else
   echo -e "${TICK} $VIM_CHECK"
 fi
@@ -82,6 +108,8 @@ if ! command -v ctags &> /dev/null; then
   elif [ $ID == "fedora" ]; then
     PACKAGES+=("ctags")
   elif [ $ID == "ubuntu" ]; then
+    PACKAGES+=("exuberant-ctags")
+  elif [ $ID == "debian" ]; then
     PACKAGES+=("exuberant-ctags")
   fi
   # ToDo: What to do for other distros??
@@ -127,6 +155,9 @@ if (( ${#PACKAGES[@]} > 0 )); then
   elif [ $ID == "ubuntu" ]; then
     echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
     exit 1
+  elif [ $ID == "debian" ]; then
+    echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
+    exit 1
   fi
   echo -e "${CROSS} Setup incomplete, resolve dependencies and run setup again"
   exit 1
@@ -169,7 +200,7 @@ if [[ ! -z $VIM_PYTHON_VER && $SYS_PYTHON_VER != $VIM_PYTHON_VER ]]; then
 fi
 
 # Ensure we have a ~/.config directory
-[ ! -d "$HOME/.config" ] && mkdir -p "$HOME/.config"
+[ ! -d "$HOME/.config" ] && mkdir -p "$HOME/.config" && echo -e "${TICK} Creating $HOME/.config"
 
 # Backup any existing powerline configuration
 POWERLINE_BACKUP_INSTALL="Backing up existing powerline config file"
@@ -180,7 +211,7 @@ elif [ -L "$HOME/.config/powerline.backup" ]; then
   # echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing symlink"
   :
 else
-  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$HOME/.config/powerline.backup" && echo -e "${CHECK} $POWERLINE_BACKUP_INSTALL"
+  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$HOME/.config/powerline.backup" && echo -e "${TICK} $POWERLINE_BACKUP_INSTALL"
 fi
 
 # Symlink powerline configuration from git source directory

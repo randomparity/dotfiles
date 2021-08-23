@@ -8,6 +8,7 @@ Uses powerline to setup bash, vim, and tmux.
 Tested distributions:
  - [ ] CentOS 7.x
  - [x] CentOS 8.x
+ - [x] Debian 10
  - [ ] Red Hat Enterprise Linux 7.x
  - [x] Red Hat Enterprise Linux 8.3
  - [ ] Red Hat Enterprise Linux 8.4
@@ -18,4 +19,4 @@ Tested distributions:
 
 ToDo:
  - [ ] Test with system-wide powerline installation
- - [ ] RHEL 8.4 uses python3.8 for python3 but vim uses python3.6, so installing powerline module is not visible to vim from python3.8 site-packages.  Workaround is to also install powerline with the command "python3.6 -m pip install --user powerline-status powerline-gitstatus".  Figure out how to test with setup.sh script.
+ - [x] RHEL 8.4 uses python3.8 for python3 but vim uses python3.6, so installing powerline module is not visible to vim from python3.8 site-packages.  Workaround is to also install powerline with the command "python3.6 -m pip install --user powerline-status powerline-gitstatus".  Figure out how to test with setup.sh script.
