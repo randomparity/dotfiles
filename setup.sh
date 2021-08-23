@@ -134,7 +134,7 @@ fi
 
 # Known dependencies met, install powerline and symlink config files
 # ToDo: Check for install error here
-POWERLINE_INSTALL="Powerline install"
+POWERLINE_INSTALL="Installing powerline"
 if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
   echo -e "${TICK} $POWERLINE_INSTALL"
 else
@@ -150,11 +150,11 @@ fi
 # (Fedora 34 does not show python version in "vim --version" output, assume it matches system python)
 SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
 VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
-echo -e "${INFO} System python version: python$SYS_PYTHON_VER"
+echo -e "${INFO} Found system python version: python$SYS_PYTHON_VER"
 if [ -z $VIM_PYTHON_VER ]; then
-  echo -e "${INFO} Vim python version   : Unknown"
+  echo -e "${INFO} Found vim python version   : Unknown"
 else
-  echo -e "${INFO} Vim python version   : python$VIM_PYTHON_VER"
+  echo -e "${INFO} Found vim python version   : python$VIM_PYTHON_VER"
 fi
 
 if [[ ! -z $VIM_PYTHON_VER && $SYS_PYTHON_VER != $VIM_PYTHON_VER ]]; then
@@ -172,56 +172,61 @@ fi
 [ ! -d "$HOME/.config" ] && mkdir -p "$HOME/.config"
 
 # Backup any existing powerline configuration
+POWERLINE_BACKUP_INSTALL="Backing up existing powerline config file"
 if [ -f "$HOME/.config/powerline.backup" ]; then
-  # echo -e "${CROSS} Found existing powerline backup file, skipping backup"
+  # echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing backup"
   :
 elif [ -L "$HOME/.config/powerline.backup" ]; then
-  # echo -e "${CROSS} Found existing powerline backup symlink, skipping backup"
+  # echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing symlink"
   :
 else
-  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$HOME/.config/powerline.backup" && echo -e "${CHECK} Backed up existing powerline config file"
+  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$HOME/.config/powerline.backup" && echo -e "${CHECK} $POWERLINE_BACKUP_INSTALL"
 fi
 
 # Symlink powerline configuration from git source directory
+POWERLINE_SYMLINK_INSTALL="Creating symlink from $SCRIPT_HOME/powerline to $HOME/.config/powerline"
 if [ ! -L $HOME/.config/powerline ]; then
   if ln -sf "$SCRIPT_HOME/powerline" "$HOME/.config/powerline"; then
-    echo -e "${TICK} Symlink $SCRIPT_HOME/powerline to $HOME/.config/powerline"
+    echo -e "${TICK} $POWERLINE_SYMLINK_INSTALL"
   else
-    echo -e "${CROSS} Symlink $SCRIPT_HOME/powerline to $HOME/.config/powerline"
-    # ToDo: Any error message here?
+    echo -e "${CROSS} $POWERLINE_SYMLINK_INSTALL"
+    # ToDo: Any error actions here?
   fi
 else
-  echo -e "${INFO} Symlink $HOME/.config/powerline already exists, skipping"
+  echo -e "${INFO} $POWERLINE_SYMLINK_INSTALL skipped, found existing symlink"
 fi
 
 # Symlink all of our dotfiles to the home directory
 for f in .vimrc .bashrc .bash_aliases .bash_profile .tmux.conf .gdbinit .dircolors; do
+  DOTFILE_BACKUP_INSTALL="Backing up $HOME/$f to $HOME/$f.backup"
+  DOTFILE_SYMLINK_INSTALL="Creating symlink from $HOME/$f to $HOME/$f.backup"
   # Backup any existing config files if present and not already backed up
   if [[ -e $HOME/$f && -f $HOME/$f.backup ]]; then
-    # echo -e "${CROSS} Found existing $f backup file, skipping backup"
+    # echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL skipped, found existing backup"
     :
   elif [[ -e $HOME/$f && -L $HOME/$f.backup ]]; then
-    # echo -e "${CROSS} Found existing $f backup symlink, skipping backup"
+    # echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL skipped, found existing symlink"
     :
   elif [ -e $HOME/$f ]; then
     if mv $HOME/$f $HOME/$f.backup; then
-      echo -e "${TICK} Backed up $HOME/$f to $HOME/$f.backup"
+      echo -e "${TICK} $DOTFILE_BACKUP_INSTALL"
     else
-      echo -e "${CROSS} Failed to backup $HOME/$f to $HOME/$f.backup, skipping"
+      echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL failed"
+      # ToDo: Any error actions here?
     fi
   else
-    echo -e "${CROSS} No existing file $f to backup, skipping"
+    echo -e "${INFO} $DOTFILE_BACKUP_INSTALL skipped, no existing file to backup"
   fi
 
   # Symlinking config file from git source directory
   if [ ! -L $HOME/$f ]; then
     if ln -sf $SCRIPT_HOME/$f $HOME/$f; then
-      echo -e "${TICK} Symlink $SCRIPT_HOME/$f to $HOME/$f"
+      echo -e "${TICK} $DOTFILE_SYMLINK_INSTALL"
     else
-      echo -e "${CROSS} Symlink $SCRIPT_HOME/$f to $HOME/$f"
+      echo -e "${CROSS} $DOTFILE_SYMLINK_INSTALL failed"
     fi
   else
-    echo -e "${INFO} Symlink $SCRIPT_HOME/$f already exists, skipping"
+    echo -e "${INFO} $DOTFILE_SYMLINK_INSTALL skipped, found existing symlink"
   fi
 done
 
@@ -231,31 +236,32 @@ done
 
 # Don't overwrite an existing configuration
 GIT_CUR_NAME=$(git config --global user.name)
+GIT_NAME_INSTALL="Setting git name ($GIT_NEW_NAME)"
 if [ -z "$GIT_CUR_NAME" ]; then
   if git config --global user.name "$GIT_NEW_NAME"; then	
-    echo -e "${TICK} Set new git name $GIT_NEW_NAME)"
+    echo -e "${TICK} $GIT_NAME_INSTALL"
   else
-    echo -e "${CROSS} Failed to set git name $GIT_NEW_NAME)"
+    echo -e "${CROSS} $GIT_NAME_INSTALL failed"
   fi
 else
-  echo -e "${INFO} Git name already defined ($GIT_CUR_NAME), skipping"
+  echo -e "${INFO} $GIT_NAME_INSTALL skipped, $GIT_CUR_NAME already defined"
 fi
 
 GIT_CUR_EMAIL=$(git config --global user.email)
+GIT_EMAIL_INSTALL="Setting git email ($GIT_NEW_EMAIL)"
 if [ -z "$GIT_CUR_EMAIL" ]; then
   if git config --global user.email "$GIT_NEW_EMAIL"; then	
-    echo -e "${TICK} Set new git email $GIT_NEW_EMAIL)"
+    echo -e "${TICK} $GIT_EMAIL_INSTALL"
   else
-    echo -e "${CROSS} Failed to set git email $GIT_NEW_EMAIL)"
+    echo -e "${CROSS} $GIT_EMAIL_INSTALL failed"
   fi
 else
-  echo -e "${INFO} Git email already defined ($GIT_CUR_EMAIL), skipping"
+  echo -e "${INFO} $GIT_EMAIL_INSTALL skipped, $GIT_CUR_EMAIL already defined"
 fi
 
 GIT_CUR_NAME=$(git config --global user.name)
 GIT_CUR_EMAIL=$(git config --global user.email)
 echo -e "${TICK} Git global configuration ($GIT_CUR_NAME <$GIT_CUR_EMAIL>)"
-
 # ToDo: Any error checking here?
 
 # ToDo: Source the new configuration now?
