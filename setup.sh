@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# set -x
+
 ###########################################################
 # Customizations (Begin)
 ###########################################################
@@ -96,6 +98,24 @@ if ! command -v vim &> /dev/null; then
   # ToDo: What to do for other distros??
 else
   echo -e "${TICK} $VIM_CHECK"
+  VIM_PYTHON_CHECK="$VIM_CHECK with python3 support"
+  if ! vim --version | grep \+python3 &> /dev/null; then
+    echo -e "${CROSS} $VIM_PYTHON_CHECK"
+    if [ $ID == "centos" ]; then
+      PACKAGES+=("vim")
+    elif [ $ID == "rhel" ]; then
+      PACKAGES+=("vim")
+    elif [ $ID == "fedora" ]; then
+      PACKAGES+=("vim")
+    elif [ $ID == "ubuntu" ]; then
+      PACKAGES+=("vim")
+    elif [ $ID == "debian" ]; then
+      PACKAGES+=("vim-nox")
+    fi
+    # ToDo: What to do for other distros??
+  else
+    echo -e "${TICK} $VIM_PYTHON_CHECK"
+  fi
 fi
 
 CTAGS_CHECK="Checking for ctags"
@@ -246,7 +266,8 @@ for f in .vimrc .bashrc .bash_aliases .bash_profile .tmux.conf .gdbinit .dircolo
       # ToDo: Any error actions here?
     fi
   else
-    echo -e "${INFO} $DOTFILE_BACKUP_INSTALL skipped, no existing file to backup"
+    # echo -e "${INFO} $DOTFILE_BACKUP_INSTALL skipped, no existing file to backup"
+    :
   fi
 
   # Symlinking config file from git source directory
