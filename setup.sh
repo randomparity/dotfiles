@@ -79,6 +79,8 @@ if ! command -v ctags &> /dev/null; then
     PACKAGES+=("ctags")
   elif [ $ID == "rhel" ]; then
     PACKAGES+=("ctags")
+  elif [ $ID == "fedora" ]; then
+    PACKAGES+=("ctags")
   elif [ $ID == "ubuntu" ]; then
     PACKAGES+=("exuberant-ctags")
   fi
@@ -119,11 +121,15 @@ if (( ${#PACKAGES[@]} > 0 )); then
   elif [ $ID == "rhel" ]; then
     echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
     exit 1
+  elif [ $ID == "fedora" ]; then
+    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+    exit 1
   elif [ $ID == "ubuntu" ]; then
     echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
     exit 1
   fi
   echo -e "${CROSS} Setup incomplete, resolve dependencies and run setup again"
+  exit 1
 fi
 
 # Known dependencies met, install powerline and symlink config files
@@ -140,13 +146,18 @@ fi
 
 # Ensure powerline is installed for python version integrated within vim
 # (RHEL 8.4 uses python3.6 for vim and python3.8 for /usr/bin/python3)
-# (Redhat shows python version on gcc compilation line, Ubuntu shows it on link line)
+# (RHEL8 shows python version on gcc compilation line, Ubuntu shows it on link line)
+# (Fedora 34 does not show python version in "vim --version" output, assume it matches system python)
 SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
 VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
 echo -e "${INFO} System python version: python$SYS_PYTHON_VER"
-echo -e "${INFO} Vim python version: python$VIM_PYTHON_VER"
+if [ -z $VIM_PYTHON_VER ]; then
+  echo -e "${INFO} Vim python version   : Unknown"
+else
+  echo -e "${INFO} Vim python version   : python$VIM_PYTHON_VER"
+fi
 
-if [ $SYS_PYTHON_VER != $VIM_PYTHON_VER ]; then
+if [[ ! -z $VIM_PYTHON_VER && $SYS_PYTHON_VER != $VIM_PYTHON_VER ]]; then
   if python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
     echo -e "${TICK} $POWERLINE_INSTALL for vim"
   else
