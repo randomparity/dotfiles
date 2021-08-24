@@ -8,14 +8,16 @@ Uses powerline to setup bash, vim, and tmux.
 Tested distributions:
  - [ ] CentOS 7.x
  - [x] CentOS 8.x
- - [x] Debian 10
+ - [x] Debian 9 (Stretch)
+ - [x] Debian 10 (Buster)
+ - [x] Debian 11 (Bullseye)
  - [ ] Red Hat Enterprise Linux 7.x
  - [x] Red Hat Enterprise Linux 8.3
- - [ ] Red Hat Enterprise Linux 8.4
- - [ ] Ubuntu 16.04
- - [x] Ubuntu 18.04
- - [x] Ubuntu 20.04
- - [x] Ubuntu 21.04
+ - [x] Red Hat Enterprise Linux 8.4
+ - [ ] Ubuntu 16.04 (Xenial Xerus)
+ - [x] Ubuntu 18.04 (Bionic Beaver)
+ - [x] Ubuntu 20.04 (Focal Fossa)
+ - [x] Ubuntu 21.04 (Hirsute Hippo)
 
 ToDo:
  - [ ] Test with system-wide powerline installation
