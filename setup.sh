@@ -314,6 +314,15 @@ fi
 GIT_CUR_NAME=$(git config --global user.name)
 GIT_CUR_EMAIL=$(git config --global user.email)
 echo -e "${TICK} Git global configuration ($GIT_CUR_NAME <$GIT_CUR_EMAIL>)"
+
+# Configure git "fixline" alias for DPDK work
+GIT_FIXLINE_INSTALL="Setting git fixline alias"
+if git config alias.fixline "log -1 --abbrev=12 --format='Fixes: %h (\"%s\")%nCc: %ae'"; then
+  echo -e "${TICK} $GIT_FIXLINE_INSTALL"
+else
+  echo -e "${CROSS} $GIT_FIXLINE_INSTALL failed"
+fi
+
 # ToDo: Any error checking here?
 
 # ToDo: Source the new configuration now?
