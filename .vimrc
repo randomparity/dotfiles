@@ -83,9 +83,10 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
     \ quit | endif
 
 " Enable spell check per filetype
-autocmd BufRead,BufNewFile *.md setlocal spell
-autocmd BufRead,BufNewFile *.txt setlocal spell
-autocmd FileType gitcommit setlocal spell
+autocmd FileType mail setlocal spell spelllang=en_us
+autocmd FileType gitcommit setlocal spell spelllang=en_us
+autocmd BufRead COMMIT_EDITMSG setlocal spell spelllang=en_us
+autocmd BufNewFile,BufRead *.md,*.mkd,*.markdown,*.txt,*.patch set spell spelllang=en_us
 
 " Allow local customizations to .vimrc outside of git repository dotfiles
 if filereadable($HOME . "/.vimrc.local")
