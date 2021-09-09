@@ -323,6 +323,13 @@ else
   echo -e "${CROSS} $GIT_FIXLINE_INSTALL failed"
 fi
 
+GIT_PULL_FF_INSTALL="Setting git pull mode to fast-forward"
+if git config pull.ff only; then
+  echo -e "${TICK} $GIT_PULL_FF_INSTALL"
+else
+  echo -e "${CROSS} $GIT_PULL_FF_INSTALL failed"
+fi
+
 # ToDo: Any error checking here?
 
 # ToDo: Source the new configuration now?
