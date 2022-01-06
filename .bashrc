@@ -148,3 +148,16 @@ if command -v python3 >/dev/null 2>&1; then
   fi
 fi
 
+# Install pyenv 
+# curl https://pyenv.run | bash
+
+# Setup pyenv if present
+if [[ -x "$HOME/.pyenv/bin/pyenv" ]]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+# Common dependencies for pyenv/python on Ubuntu:
+# sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
