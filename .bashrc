@@ -148,6 +148,7 @@ if command -v python3 >/dev/null 2>&1; then
   fi
 fi
 
+##############################################################################
 # Install pyenv 
 # curl https://pyenv.run | bash
 
@@ -161,3 +162,13 @@ fi
 
 # Common dependencies for pyenv/python on Ubuntu:
 # sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
+
+
+##############################################################################
+# Configure go (if present)
+if command -v go >/dev/null 2>&1; then
+  export GOPATH=$(go env GOPATH)
+  mkdir -p $HOME/go/{bin,src}
+  export PATH=$PATH:$GOPATH/bin
+fi
+
