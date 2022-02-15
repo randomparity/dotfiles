@@ -330,6 +330,13 @@ else
   echo -e "${CROSS} $GIT_PULL_FF_INSTALL failed"
 fi
 
+GIT_DEF_BRANCH_NAME="Setting git default branch name to main"
+if git config --global init.defaultBranch main; then
+  echo -e "${TICK} $GIT_DEF_BRANCH_NAME"
+else
+  echo -e "${CROSS} $GIT_DEF_BRANCH_NAME failed"
+fi
+
 # ToDo: Any error checking here?
 
 # ToDo: Source the new configuration now?
