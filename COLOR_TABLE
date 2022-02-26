@@ -5,14 +5,14 @@ if [[ -t 1 ]] && [[ $(tput colors) -ge 8 ]]; then
   COL_BOLD='\e[1m'
   COL_ULINE='\e[4m'
 
-  COL_NC='\e[0m'
-  COL_GRAY='\e[90m'
-  COL_RED='\e[91m'
-  COL_GREEN='\e[32m'
-  COL_YELLOW='\e[33m'
-  COL_BLUE='\e[94m'
-  COL_PURPLE='\e[95m'
-  COL_CYAN='\e[96m'
+  COL_NC='\033[0m'
+  COL_GRAY='\033[90m'
+  COL_RED='\033[91m'
+  COL_GREEN='\033[32m'
+  COL_YELLOW='\033[33m'
+  COL_BLUE='\033[94m'
+  COL_PURPLE='\033[95m'
+  COL_CYAN='\033[96m'
 else
   # Provide empty variables for `set -u`
   COL_BOLD=""

@@ -118,11 +118,18 @@ fi
 
 # DRC - Local changes start here
 
+# Test for Homebrew on MacOS X
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # User specific environment
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
 then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
+# DRC - TEMP!!!!!!
+PATH="$HOME/Library/Python/3.9/bin:$PATH"
 export PATH
 
 # Install powerline if present
@@ -148,3 +155,11 @@ if command -v python3 >/dev/null 2>&1; then
   fi
 fi
 
+# Test for MacOSX and brew
+if (command -v brew && brew list --formula | grep -c vim ) > /dev/null 2>&1; then
+    alias vim="$(brew --prefix vim)/bin/vim"
+fi
+
+# Disable MacOS nagging about zsh
+export BASH_SILENCE_DEPRECATION_WARNING=1
+# Don't forget to update bash on MacOS with 'brew install bash'
