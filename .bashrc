@@ -119,37 +119,27 @@ fi
 # DRC - Local changes start here
 
 ##############################################################################
-# User specific environment
+# Initial PATH setup
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+  PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+  export PATH
 fi
-export PATH
 
-##############################################################################
-# MacOS - It's important that brew be added to the PATH early on
+# Get Brew in the path early for MacOS
 if [ -x /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-
 ##############################################################################
-# Installing pyenv
+# Setup pyenv
 # curl https://pyenv.run | bash  -or- brew install pyenv pyenv-virtualenv
 #
-# Common dependencies for pyenv/python on Ubuntu:
-# sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
+# Notes:
+# - Common dependencies for pyenv/python on Ubuntu:
+#   sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
 
 ##############################################################################
-# Install pyenv (Must be installed before powerline!)
-# 
-# Useful Commands:
-# - pyenv install --list
-# - pyenv install 3.9.9
-# - pyenv versions
-# - pyenv global 3.9.9
-# - pyenv which python
-
-# Setup pyenv if present
+# Setup pyenv environment (Should be done before powerline!)
 if command -v pyenv > /dev/null 2>&1; then
   export PYENV_ROOT=$(pyenv root)
   export PATH="$PYENV_ROOT/bin:$PATH"
@@ -157,11 +147,11 @@ if command -v pyenv > /dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
-echo "The PATH is: $PATH"
-
 ##############################################################################
-# Powerline setup
-set -x
+# Setup powerline
+#
+# MacOS Notes:
+# - Install pyenv first, then install powerline-status
 if command -v python3 >/dev/null 2>&1; then
   PYTHON_SITE_PATH=`python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'`
   PYTHON_LOCAL_SITE_PATH=`python3 -m site --user-site`
@@ -182,10 +172,7 @@ if command -v python3 >/dev/null 2>&1; then
     POWERLINE_BASH_SELECT=1
     source $POWERLINE_LOC/bindings/bash/powerline.sh
   fi
-else
-  echo "No python3 to support powerline"
 fi
-set +x
 
 ##############################################################################
 # Linux specific customizations
