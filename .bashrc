@@ -118,14 +118,50 @@ fi
 
 # DRC - Local changes start here
 
+##############################################################################
 # User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
-then
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 export PATH
 
-# Install powerline if present
+##############################################################################
+# MacOS - It's important that brew be added to the PATH early on
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+
+##############################################################################
+# Installing pyenv
+# curl https://pyenv.run | bash  -or- brew install pyenv pyenv-virtualenv
+#
+# Common dependencies for pyenv/python on Ubuntu:
+# sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
+
+##############################################################################
+# Install pyenv (Must be installed before powerline!)
+# 
+# Useful Commands:
+# - pyenv install --list
+# - pyenv install 3.9.9
+# - pyenv versions
+# - pyenv global 3.9.9
+# - pyenv which python
+
+# Setup pyenv if present
+if command -v pyenv > /dev/null 2>&1; then
+  export PYENV_ROOT=$(pyenv root)
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+echo "The PATH is: $PATH"
+
+##############################################################################
+# Powerline setup
+set -x
 if command -v python3 >/dev/null 2>&1; then
   PYTHON_SITE_PATH=`python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'`
   PYTHON_LOCAL_SITE_PATH=`python3 -m site --user-site`
@@ -146,23 +182,33 @@ if command -v python3 >/dev/null 2>&1; then
     POWERLINE_BASH_SELECT=1
     source $POWERLINE_LOC/bindings/bash/powerline.sh
   fi
+else
+  echo "No python3 to support powerline"
 fi
+set +x
 
 ##############################################################################
-# Install pyenv 
-# curl https://pyenv.run | bash
+# Linux specific customizations
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  echo "Hi Linux"
+  # Linux commands here
 
-# Setup pyenv if present
-if [[ -x "$HOME/.pyenv/bin/pyenv" ]]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
-  eval "$(pyenv virtualenv-init -)"
+##############################################################################
+# MacOS specific customizations
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+
+  # Setup alias for vim installed by brew
+  if (command -v brew && brew list --formula | grep -c vim ) > /dev/null 2>&1; then
+    alias vim="$(brew --prefix vim)/bin/vim"
+  fi
+
+  # Setup alias for running GUI diff app from the command line
+  # ToDo: How to detect GUI diff application?
+  alias vdiff="open -a CompareMerge2 "
+
+  # Disable MacOS nagging about zsh
+  export BASH_SILENCE_DEPRECATION_WARNING=1
 fi
-
-# Common dependencies for pyenv/python on Ubuntu:
-# sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
-
 
 ##############################################################################
 # Configure go (if present)

@@ -22,52 +22,56 @@ VER="unknown"
 ID="unknown"
 
 # Check for OS distro and version
-if [ -f /etc/os-release ]; then
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [ -f /etc/os-release ]; then
     # freedesktop.org and systemd
     . /etc/os-release
     OS=$NAME
     VER=$VERSION
     ID=$ID
-elif type lsb_release >/dev/null 2>&1; then
+  elif type lsb_release >/dev/null 2>&1; then
     # linuxbase.org
     OS=$(lsb_release -si)
     VER=$(lsb_release -sr)
-elif [ -f /etc/lsb-release ]; then
+  elif [ -f /etc/lsb-release ]; then
     # For some versions of Debian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$DISTRIB_ID
     VER=$DISTRIB_RELEASE
-elif [ -f /etc/debian_version ]; then
+  elif [ -f /etc/debian_version ]; then
     # Older Debian/Ubuntu/etc.
     OS=Debian
     VER=$(cat /etc/debian_version)
-elif [ -f /etc/SuSe-release ]; then
+  elif [ -f /etc/SuSe-release ]; then
     # Older SuSE/etc.
     echo -e "${CROSS} Can't parse /etc/SuSe-release"
     exit 1
-elif [ -f /etc/redhat-release ]; then
+  elif [ -f /etc/redhat-release ]; then
     echo -e "${CROSS} Can't parse /etc/redhat-release"
     exit 1
-else
+  else
     # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
     OS=$(uname -s)
     VER=$(uname -r)
-fi
-echo -e "${INFO} Found $OS $VER [$ID]"
+  fi
 
-if [ $ID == "centos" ]; then
-  :
-elif [ $ID == "rhel" ]; then
-  :
-elif [ $ID == "fedora" ]; then
-  :
-elif [ $ID == "ubuntu" ]; then
-  :
-elif [ $ID == "debian" ]; then
-  :
-else
-  echo -e "${CROSS} Validating OS distro failed, $SCRIPT_NAME must be modified"
-  exit 1
+  if [ $ID == "centos" ]; then
+    :
+  elif [ $ID == "rhel" ]; then
+    :
+  elif [ $ID == "fedora" ]; then
+    :
+  elif [ $ID == "ubuntu" ]; then
+    :
+  elif [ $ID == "debian" ]; then
+    :
+  else
+    echo -e "${CROSS} Validating OS distro failed, $SCRIPT_NAME must be modified"
+    exit 1
+  fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    OS=MacOSX
 fi
 
 
@@ -84,23 +88,7 @@ fi
 VIM_CHECK="Checking for vim"
 if ! command -v vim &> /dev/null; then
   echo -e "${CROSS} $VIM_CHECK"
-  if [ $ID == "centos" ]; then
-    PACKAGES+=("vim")
-  elif [ $ID == "rhel" ]; then
-    PACKAGES+=("vim")
-  elif [ $ID == "fedora" ]; then
-    PACKAGES+=("vim")
-  elif [ $ID == "ubuntu" ]; then
-    PACKAGES+=("vim")
-  elif [ $ID == "debian" ]; then
-    PACKAGES+=("vim-nox")
-  fi
-  # ToDo: What to do for other distros??
-else
-  echo -e "${TICK} $VIM_CHECK"
-  VIM_PYTHON_CHECK="$VIM_CHECK with python3 support"
-  if ! vim --version | grep \+python3 &> /dev/null; then
-    echo -e "${CROSS} $VIM_PYTHON_CHECK"
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     if [ $ID == "centos" ]; then
       PACKAGES+=("vim")
     elif [ $ID == "rhel" ]; then
@@ -112,6 +100,29 @@ else
     elif [ $ID == "debian" ]; then
       PACKAGES+=("vim-nox")
     fi
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    PACKAGES+=("vim")
+  fi
+else
+  echo -e "${TICK} $VIM_CHECK"
+  VIM_PYTHON_CHECK="$VIM_CHECK with python3 support"
+  if ! vim --version | grep \+python3 &> /dev/null; then
+    echo -e "${CROSS} $VIM_PYTHON_CHECK"
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      if [ $ID == "centos" ]; then
+        PACKAGES+=("vim")
+      elif [ $ID == "rhel" ]; then
+        PACKAGES+=("vim")
+      elif [ $ID == "fedora" ]; then
+        PACKAGES+=("vim")
+      elif [ $ID == "ubuntu" ]; then
+        PACKAGES+=("vim")
+      elif [ $ID == "debian" ]; then
+        PACKAGES+=("vim-nox")
+      fi
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      PACKAGES+=("vim")
+    fi
     # ToDo: What to do for other distros??
   else
     echo -e "${TICK} $VIM_PYTHON_CHECK"
@@ -121,16 +132,20 @@ fi
 CTAGS_CHECK="Checking for ctags"
 if ! command -v ctags &> /dev/null; then
   echo -e "${CROSS} $CTAGS_CHECK"
-  if [ $ID == "centos" ]; then
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [ $ID == "centos" ]; then
+      PACKAGES+=("ctags")
+    elif [ $ID == "rhel" ]; then
+      PACKAGES+=("ctags")
+    elif [ $ID == "fedora" ]; then
+      PACKAGES+=("ctags")
+    elif [ $ID == "ubuntu" ]; then
+      PACKAGES+=("exuberant-ctags")
+    elif [ $ID == "debian" ]; then
+      PACKAGES+=("exuberant-ctags")
+    fi
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
     PACKAGES+=("ctags")
-  elif [ $ID == "rhel" ]; then
-    PACKAGES+=("ctags")
-  elif [ $ID == "fedora" ]; then
-    PACKAGES+=("ctags")
-  elif [ $ID == "ubuntu" ]; then
-    PACKAGES+=("exuberant-ctags")
-  elif [ $ID == "debian" ]; then
-    PACKAGES+=("exuberant-ctags")
   fi
   # ToDo: What to do for other distros??
 else
@@ -163,25 +178,42 @@ fi
 
 # ToDo: Give option to install here
 if (( ${#PACKAGES[@]} > 0 )); then
-  if [ $ID == "centos" ]; then
-    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
-    exit 1
-  elif [ $ID == "rhel" ]; then
-    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
-    exit 1
-  elif [ $ID == "fedora" ]; then
-    echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
-    exit 1
-  elif [ $ID == "ubuntu" ]; then
-    echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
-    exit 1
-  elif [ $ID == "debian" ]; then
-    echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [ $ID == "centos" ]; then
+      echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+      exit 1
+    elif [ $ID == "rhel" ]; then
+      echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+      exit 1
+    elif [ $ID == "fedora" ]; then
+      echo -e "${INFO} Run 'sudo yum install -y ${PACKAGES[@]}'"
+      exit 1
+    elif [ $ID == "ubuntu" ]; then
+      echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
+      exit 1
+    elif [ $ID == "debian" ]; then
+      echo -e "${INFO} Run 'sudo apt install -y ${PACKAGES[@]}'"
+      exit 1
+    fi
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo -e "${INFO} Run 'brew install ${PACKAGES[@]}'"
     exit 1
   fi
   echo -e "${CROSS} Setup incomplete, resolve dependencies and run setup again"
   exit 1
 fi
+
+##############################################################################
+# Install pyenv & python
+curl https://pyenv.run | bash
+
+export PYENV_ROOT=$(pyenv root)
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+
+pyenv install 3.9.9
+pyenv global 3.9.9
 
 # Known dependencies met, install powerline and symlink config files
 # ToDo: Check for install error here
@@ -195,6 +227,7 @@ else
   exit 1
 fi
 
+##############################################################################
 # Ensure powerline is installed for python version integrated within vim
 # (RHEL 8.4 uses python3.6 for vim and python3.8 for /usr/bin/python3)
 # (RHEL8 shows python version on gcc compilation line, Ubuntu shows it on link line)
