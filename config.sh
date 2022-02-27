@@ -116,6 +116,8 @@ else
   exit 1
 fi
 
+set -x 
+
 ##############################################################################
 # Fetch and install powerline
 POWERLINE_INSTALL="Installing powerline"
@@ -143,15 +145,13 @@ else
   echo -e "${INFO} Found vim python version   : python$VIM_PYTHON_VER"
 fi
 
-if [[ ! -z $VIM_PYTHON_VER && $SYS_PYTHON_VER != $VIM_PYTHON_VER ]]; then
-  if python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
-    echo -e "${TICK} $POWERLINE_INSTALL for vim"
-  else
-    echo -e "${CROSS} $POWERLINE_INSTALL for vim"
-    echo "  Automated install failed, run 'python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus' manually"
-    echo "  then rerun $SCRIPT_NAME when finished to complete install"
-    exit 1
-  fi
+if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
+  echo -e "${TICK} $POWERLINE_INSTALL for vim"
+else
+  echo -e "${CROSS} $POWERLINE_INSTALL for vim"
+  echo "  Automated install failed, run 'python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus' manually"
+  echo "  then rerun $SCRIPT_NAME when finished to complete install"
+  exit 1
 fi
 
 # Ensure we have a ~/.config directory

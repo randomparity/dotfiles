@@ -131,17 +131,9 @@ if [ -x /opt/homebrew/bin/brew ]; then
 fi
 
 ##############################################################################
-# Setup pyenv
-# curl https://pyenv.run | bash  -or- brew install pyenv pyenv-virtualenv
-#
-# Notes:
-# - Common dependencies for pyenv/python on Ubuntu:
-#   sudo apt install -y libedit-dev libsqlite3-dev libreadline-dev libbz2-dev libssl-dev
-
-##############################################################################
 # Setup pyenv environment (Should be done before powerline!)
-if command -v pyenv > /dev/null 2>&1; then
-  export PYENV_ROOT=$(pyenv root)
+if [ -x $HOME/.pyenv/bin/pyenv ]; then
+  export PYENV_ROOT=$HOME/.pyenv
   export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init --path)"
   eval "$(pyenv virtualenv-init -)"
@@ -149,9 +141,6 @@ fi
 
 ##############################################################################
 # Setup powerline
-#
-# MacOS Notes:
-# - Install pyenv first, then install powerline-status
 if command -v python3 >/dev/null 2>&1; then
   PYTHON_SITE_PATH=`python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'`
   PYTHON_LOCAL_SITE_PATH=`python3 -m site --user-site`
