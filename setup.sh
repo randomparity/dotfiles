@@ -68,8 +68,8 @@ echo -e "${INFO} Found $OS $VER [$ID]"
 ##############################################################################
 UBUNTU_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
 DEBIAN_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim-nox" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-RPM_PACKAGES=("mc" "python3" "python3-pip" "tmux" "ctags" "vim" "curl")
-BREW_PACKAGES=("tmux" "curl" openssl readline sqlite3 xz zlib)
+RPM_PACKAGES=("mc" "python3" "python3-pip" "tmux" "ctags" "vim" "curl" "zlib-devel" "bzip2" "bzip2-devel" "readline-devel" "sqlite" "sqlite-devel" "openssl-devel" "tk-devel" "libffi-devel" "xz-devel")
+BREW_PACKAGES=("tmux" "curl" "openssl" "readline" "sqlite3" "xz" "zlib")
 GROUP_PACKAGES=("\"Development Tools\"")
 
 ##############################################################################
