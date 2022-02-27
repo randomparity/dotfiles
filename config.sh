@@ -37,7 +37,8 @@ exe() {
 
 # Function to write status to the console and a log file (with ANSI stripped)
 log() {
-  echo -e "$@" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
+  echo -e "$@" | tee -a $LOG_FILE
+  # echo -e "$@" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
   # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream
   # perl -pe ' s/\e\[[\x30-\x3f]*[\x20-\x2f]*[\x40-\x7e]//g; s/\e[PX^_].*?\e\\//g; s/\e\][^\a]*(?:\a|\e\\)//g; s/\e[\[\]A-Z\\^_@]//g;'
 }
@@ -181,6 +182,7 @@ pyenv global $PYENV_VER
 # Fetch and install a copy of pip for our local python version
 PIP_FETCH="Fetching local pip installer"
 if wget https://bootstrap.pypa.io/get-pip.py >> $LOG_FILE 2>&1; then
+  # https://bootstrap.pypa.io/pip/3.6/get-pip.py
   log "${TICK} $PIP_FETCH" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
 else
   log "${CROSS} $PIP_FETCH" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
