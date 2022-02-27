@@ -1,7 +1,8 @@
+# Files created when running setup.sh script
 .setup_completed
 get-pip.py
 
-# Skip backup files
+# Backup files created by config.sh script
 .bashrc.*.backup
 .bash_aliases.*.backup
 .bash_profile.*.backup

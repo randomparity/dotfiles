@@ -66,9 +66,9 @@ echo -e "${INFO} Found $OS $VER [$ID]"
 # Pyenv build requirements
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 ##############################################################################
-UBUNTU_PACKAGES=("python3" "python3-pip" "tmux" "exuberant-ctags" "vim" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-DEBIAN_PACKAGES=("tmux" "exuberant-ctags" "vim-nox" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-RPM_PACKAGES=("tmux" "ctags" "vim" "curl")
+UBUNTU_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
+DEBIAN_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim-nox" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
+RPM_PACKAGES=("mc" "python3" "python3-pip" "tmux" "ctags" "vim" "curl")
 BREW_PACKAGES=("tmux" "curl" openssl readline sqlite3 xz zlib)
 GROUP_PACKAGES=("\"Development Tools\"")
 
@@ -84,4 +84,5 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   brew install -y ${BREW_PACKAGES[@]} || exit 1
 fi
 
+# Let the config.sh script know that we ran successfully
 touch .setup_completed
