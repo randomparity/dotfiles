@@ -1,2 +1,11 @@
 .setup_completed
 get-pip.py
+
+# Skip backup files
+.bashrc.backup
+.bash_aliases.backup
+.bash_profile.backup
+.dircolors.backup
+.gdbinit.backup
+.tmux.conf.backup
+.vimrc.backup

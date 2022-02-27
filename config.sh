@@ -17,6 +17,8 @@ SCRIPT_NAME="$0"
 SCRIPT_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source COLOR_TABLE
 
+NOW=$(date +"%Y-%m-%d-%T")
+
 OS="unknown"
 VER="unknown"
 ID="unknown"
@@ -146,8 +148,6 @@ if [[ ! -z $SYS_PYTHON_VER ]]; then
   fi
 fi
 
-exit 0
-
 ##############################################################################
 # Install a local python version and set it as default
 echo -e "${TICK} Installing & selecting local python $PYENV_VER"
@@ -156,7 +156,7 @@ pyenv global $PYENV_VER
 
 ##############################################################################
 # Fetch and install a copy of pip for our local python version
-PIP_FETCH="Fetching pip installer"
+PIP_FETCH="Fetching local pip installer"
 if wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1; then
   echo -e "${TICK} $PIP_FETCH"
 else
@@ -164,7 +164,7 @@ else
   exit 1
 fi
 
-PIP_INSTALL="Installing pip"
+PIP_INSTALL="Installing local pip"
 if python3 get-pip.py > /dev/null 2>&1; then
   rm get-pip.py
   echo -e "${TICK} $PIP_INSTALL"
@@ -185,74 +185,57 @@ else
   exit 1
 fi
 
+##############################################################################
 # Ensure we have a ~/.config directory
 [ ! -d "$HOME/.config" ] && mkdir -p "$HOME/.config" && echo -e "${TICK} Creating $HOME/.config"
 
+##############################################################################
 # Backup any existing powerline configuration
-POWERLINE_BACKUP_INSTALL="Backing up existing powerline config file"
-if [ -f "$HOME/.config/powerline.backup" ]; then
-  # echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing backup"
-  :
-elif [ -L "$HOME/.config/powerline.backup" ]; then
-  # echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing symlink"
-  :
+POWERLINE_BACKUP_INSTALL="Saving existing powerline config file"
+if [ -L "$HOME/.config/powerline" ]; then
+  echo -e "${CROSS} $POWERLINE_BACKUP_INSTALL skipped, found existing symlink"
 else
-  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$HOME/.config/powerline.backup" && echo -e "${TICK} $POWERLINE_BACKUP_INSTALL"
+  [ -d "$HOME/.config/powerline" ] && mv "$HOME/.config/powerline" "$SCRIPT_HOME/.config/powerline.backup" && echo -e "${TICK} $POWERLINE_BACKUP_INSTALL"
 fi
 
+##############################################################################
 # Symlink powerline configuration from git source directory
-POWERLINE_SYMLINK_INSTALL="Creating symlink from $SCRIPT_HOME/powerline to $HOME/.config/powerline"
-if [ ! -L $HOME/.config/powerline ]; then
+POWERLINE_SYMLINK_INSTALL="Symlinking $SCRIPT_HOME/powerline to $HOME/.config/powerline"
+if [ -L "$HOME/.config/powerline" ]; then
+  echo -e "${INFO} $POWERLINE_SYMLINK_INSTALL skipped, found existing symlink"
+else
   if ln -sf "$SCRIPT_HOME/powerline" "$HOME/.config/powerline"; then
     echo -e "${TICK} $POWERLINE_SYMLINK_INSTALL"
   else
     echo -e "${CROSS} $POWERLINE_SYMLINK_INSTALL"
-    # ToDo: Any error actions here?
   fi
-else
-  echo -e "${INFO} $POWERLINE_SYMLINK_INSTALL skipped, found existing symlink"
 fi
 
-# Symlink all of our dotfiles to the home directory
+##############################################################################
+# Symlink new dotfiles to the home directory
 for f in .vimrc .bashrc .bash_aliases .bash_profile .tmux.conf .gdbinit .dircolors; do
-  DOTFILE_BACKUP_INSTALL="Backing up $HOME/$f to $HOME/$f.backup"
-  DOTFILE_SYMLINK_INSTALL="Creating symlink from $HOME/$f to $HOME/$f.backup"
+  DOTFILE_BACKUP_INSTALL="Backing up $HOME/$f to $SCRIPT_HOME/$f.$NOW.backup"
+  DOTFILE_SYMLINK_INSTALL="Creating symlink from $HOME/$f to $SCRIPT_HOME/$f"
   # Backup any existing config files if present and not already backed up
-  if [[ -e $HOME/$f && -f $HOME/$f.backup ]]; then
-    # echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL skipped, found existing backup"
-    :
-  elif [[ -e $HOME/$f && -L $HOME/$f.backup ]]; then
-    # echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL skipped, found existing symlink"
-    :
-  elif [ -e $HOME/$f ]; then
-    if mv $HOME/$f $HOME/$f.backup; then
+  if [ -e $HOME/$f ]; then
+    if mv $HOME/$f $SCRIPT_HOME/$f.$NOW.backup; then
       echo -e "${TICK} $DOTFILE_BACKUP_INSTALL"
     else
       echo -e "${CROSS} $DOTFILE_BACKUP_INSTALL failed"
-      # ToDo: Any error actions here?
+      # ToDo: Any error handling here?
     fi
-  else
-    # echo -e "${INFO} $DOTFILE_BACKUP_INSTALL skipped, no existing file to backup"
-    :
   fi
 
   # Symlinking config file from git source directory
-  if [ ! -L $HOME/$f ]; then
-    if ln -sf $SCRIPT_HOME/$f $HOME/$f; then
-      echo -e "${TICK} $DOTFILE_SYMLINK_INSTALL"
-    else
-      echo -e "${CROSS} $DOTFILE_SYMLINK_INSTALL failed"
-    fi
+  if ln -sf $SCRIPT_HOME/$f $HOME/$f; then
+    echo -e "${TICK} $DOTFILE_SYMLINK_INSTALL"
   else
-    echo -e "${INFO} $DOTFILE_SYMLINK_INSTALL skipped, found existing symlink"
+    echo -e "${CROSS} $DOTFILE_SYMLINK_INSTALL failed"
   fi
 done
 
-# Add git global configuration settings
-# ToDo: Add error checking here
-# ToDo: Better way to capture this info?
-
-# Don't overwrite an existing configuration
+##############################################################################
+# Configure git user name
 GIT_CUR_NAME=$(git config --global user.name)
 GIT_NAME_INSTALL="Setting git name ($GIT_NEW_NAME)"
 if [ -z "$GIT_CUR_NAME" ]; then
@@ -265,6 +248,8 @@ else
   echo -e "${INFO} $GIT_NAME_INSTALL skipped, $GIT_CUR_NAME already defined"
 fi
 
+##############################################################################
+# Configure git user email
 GIT_CUR_EMAIL=$(git config --global user.email)
 GIT_EMAIL_INSTALL="Setting git email ($GIT_NEW_EMAIL)"
 if [ -z "$GIT_CUR_EMAIL" ]; then
@@ -281,7 +266,8 @@ GIT_CUR_NAME=$(git config --global user.name)
 GIT_CUR_EMAIL=$(git config --global user.email)
 echo -e "${TICK} Git global configuration ($GIT_CUR_NAME <$GIT_CUR_EMAIL>)"
 
-# Configure git "fixline" alias for DPDK work
+##############################################################################
+# Configure git "fixline" alias for DPDK
 GIT_FIXLINE_INSTALL="Setting git fixline alias"
 if git config alias.fixline "log -1 --abbrev=12 --format='Fixes: %h (\"%s\")%nCc: %ae'"; then
   echo -e "${TICK} $GIT_FIXLINE_INSTALL"
@@ -289,13 +275,17 @@ else
   echo -e "${CROSS} $GIT_FIXLINE_INSTALL failed"
 fi
 
+##############################################################################
+# Configure git pull mode
 GIT_PULL_FF_INSTALL="Setting git pull mode to fast-forward"
-if git config pull.ff only; then
+if git config --global pull.ff only; then
   echo -e "${TICK} $GIT_PULL_FF_INSTALL"
 else
   echo -e "${CROSS} $GIT_PULL_FF_INSTALL failed"
 fi
 
+##############################################################################
+# Configure git default branch name
 GIT_DEF_BRANCH_NAME="Setting git default branch name to main"
 if git config --global init.defaultBranch main; then
   echo -e "${TICK} $GIT_DEF_BRANCH_NAME"
@@ -303,9 +293,10 @@ else
   echo -e "${CROSS} $GIT_DEF_BRANCH_NAME failed"
 fi
 
-# ToDo: Any error checking here?
-
-# ToDo: Source the new configuration now?
 echo -e "${TICK} Setup complete, logout/login to enable changes"
 
+##############################################################################
+# ToDo: Any error checking here?
+# ToDo: Source the new configuration now?
 # ToDo: What if powerline installed system-wide??  How to handle?
+# ToDo: Replace *.backup with *.
