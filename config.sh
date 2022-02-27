@@ -72,20 +72,27 @@ echo -e "${TICK} Checking for pre-requisites"
 
 ##############################################################################
 # Install pyenv & local python version
-PYENV_CHECK="Checking for pyenv"
+PYENV_CHECK="Installing pyenv"
 PYENV_VER="3.9.10"
-export PYENV_ROOT=$($HOME/.pyenv/bin/pyenv root)
-export PATH="$PYENV_ROOT/bin:$PATH"
-if ! command -v pyenv > /dev/null 2>&1; then
-  echo -e "${CROSS} $PYENV_CHECK"
+if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
   curl https://pyenv.run | bash
+fi
 
-  eval "$(pyenv init --path)"
-  eval "$(pyenv virtualenv-init -)"
+# Verify the install worked
+if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
+  echo -e "${CROSS} $PYENV_CHECK"
+  exit 1
 else
   echo -e "${TICK} $PYENV_CHECK"
 fi
 
+# Setup the pyenv environment for use in the rest of this script
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+
+# Configure a local python install
 echo -e "${TICK} Installing & selecting python $PYENV_VER"
 pyenv install -s $PYENV_VER
 pyenv global $PYENV_VER
