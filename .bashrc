@@ -1,4 +1,4 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
+#) ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
@@ -18,6 +18,7 @@ shopt -s histappend
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=10000
 HISTFILESIZE=20000
+HISTIGNORE="history:pwd:exit:df:ls:ls -alh:ll"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -32,12 +33,12 @@ shopt -s checkwinsize
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+  debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+  xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -105,7 +106,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# enable programmable completion features (you don't need to enable
+# Enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
@@ -116,14 +117,13 @@ if ! shopt -oq posix; then
   fi
 fi
 
+##############################################################################
 # DRC - Local changes start here
+##############################################################################
 
 ##############################################################################
 # Initial PATH setup
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-  PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-  export PATH
-fi
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 
 # Get Brew in the path early for MacOS
 if [ -x /opt/homebrew/bin/brew ]; then
@@ -131,46 +131,47 @@ if [ -x /opt/homebrew/bin/brew ]; then
 fi
 
 ##############################################################################
-# Setup pyenv environment (Should be done before powerline!)
-if [ -x $HOME/.pyenv/bin/pyenv ]; then
-  export PYENV_ROOT=$HOME/.pyenv
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
-  eval "$(pyenv virtualenv-init -)"
-fi
-
-##############################################################################
 # Setup powerline
-if command -v python3 >/dev/null 2>&1; then
-  PYTHON_SITE_PATH=`python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'`
-  PYTHON_LOCAL_SITE_PATH=`python3 -m site --user-site`
-  if command -v powerline-daemon > /dev/null 2>&1; then
-    # ToDo: How to restart powerline-daemon??
-    powerline-daemon -q
-    # Check for system-wide powerline install first, don't want to mess with
-    # virtualenv at this point. 
-    # ToDo: What if neither of these exist??
-    if [ -f $PYTHON__SITE_PATH/powerline/bindings/bash/powerline.sh ]; then
-      export POWERLINE_LOC=$PYTHON_SITE_PATH/powerline
-    elif [ -f $PYTHON_LOCAL_SITE_PATH/powerline/bindings/bash/powerline.sh ]; then
-      export POWERLINE_LOC=$PYTHON_LOCAL_SITE_PATH/powerline
+#
+# We do this before initializing pyenv so that the system python is used.  If
+# we didn't then we'd need to constantly keep reinstalling powerline everytime
+# the user installs a new python version.
+
+if [[ -x $(command -v python3) ]]; then
+  export POWERLINE_SITE_PATH=`python3 -c "import powerline as _; print(_.__path__[0])"`
+  if [[ -n $POWERLINE_SITE_PATH && -x $(command -v powerline-daemon) ]]; then
+    powerline-daemon --quiet
+    if [[ -f $POWERLINE_SITE_PATH/bindings/bash/powerline.sh ]]; then
+      source $POWERLINE_SITE_PATH/bindings/bash/powerline.sh
+      # Need these for tmux
+      POWERLINE_CONFIG_COMMAND=powerline-config
+      POWERLINE_BASH_CONTINUATION=1
+      POWERLINE_BASH_SELECT=1
     fi
-    # Need this exported for use by tmux later
-    POWERLINE_CONFIG_COMMAND=powerline-config
-    POWERLINE_BASH_CONTINUATION=1
-    POWERLINE_BASH_SELECT=1
-    source $POWERLINE_LOC/bindings/bash/powerline.sh
   fi
 fi
 
 ##############################################################################
+# Setup pyenv environment (Should be done after powerline!)
+
+if [[ -x $HOME/.pyenv/bin/pyenv ]]; then
+  export PYENV_ROOT=$HOME/.pyenv
+  export PYENV_VERSION=$(cat $PYENV_ROOT/version)
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+##############################################################################
 # Linux specific customizations
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   true
   # Additional linux commands here
 
 ##############################################################################
 # MacOS specific customizations
+
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
   # Setup alias for vim installed by brew
@@ -188,10 +189,9 @@ fi
 
 ##############################################################################
 # Configure go (if present)
+
 if command -v go >/dev/null 2>&1; then
   export GOPATH=$(go env GOPATH)
   mkdir -p $HOME/go/{bin,src}
   export PATH=$PATH:$GOPATH/bin
 fi
-
-true
