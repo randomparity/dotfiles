@@ -177,8 +177,8 @@ fi
 ##############################################################################
 # Linux specific customizations
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  echo "Hi Linux"
-  # Linux commands here
+  true
+  # Additional linux commands here
 
 ##############################################################################
 # MacOS specific customizations
@@ -205,3 +205,4 @@ if command -v go >/dev/null 2>&1; then
   export PATH=$PATH:$GOPATH/bin
 fi
 
+true

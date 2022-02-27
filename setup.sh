@@ -76,10 +76,12 @@ GROUP_PACKAGES=("\"Development Tools\"")
 # Install requirements for the distro
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   case $ID in
-    ubuntu) apt install -y ${UBUNTU_PACKAGES[@]};;
-    debian) apt install -y ${DEBIAN_PACKAGES[@]};;
+    ubuntu) apt install -y ${UBUNTU_PACKAGES[@]} || exit 1;;
+    debian) apt install -y ${DEBIAN_PACKAGES[@]} || exit 1;;
     centos | fedora | rhel) dnf install -y ${RPM_PACKAGES[@]} && dnf groupinstall -y ${GROUP_PACKAGES[@]};;
   esac
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-  brew install -y ${BREW_PACKAGES[@]}
+  brew install -y ${BREW_PACKAGES[@]} || exit 1
 fi
+
+touch .setup_completed

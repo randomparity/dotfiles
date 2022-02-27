@@ -2,9 +2,6 @@
 
 # set -x
 
-# Make sure we're running as root
-[ ! "$EUID" -eq 0 ] && echo "Rerun script with \"sudo $0 $@\"" && exit 1
-
 ###########################################################
 # Customizations (Begin)
 ###########################################################
@@ -70,133 +67,13 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 echo -e "${INFO} Found $OS $VER [$ID]"
 
-##############################################################################
-# Pyenv build requirements
-# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-APT_PACKAGES=("make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-RPM_PACKAGES=()
-BREW_PACKAGES=(openssl readline sqlite3 xz zlib)
-GROUP_PACKAGES=()
+[[ ! -f .setup_completed ]] && echo -e "${CROSS} Did you run setup.sh?" && exit 1
+echo -e "${TICK} Checking for pre-requisites"
 
 ##############################################################################
-# Install gcc and associated tools
-GCC_CHECK="Checking for gcc"
-if ! command -v gcc &> /dev/null; then
-  echo -e "${CROSS} $GCC_CHECK"
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    case $ID in
-      ubuntu | debian)        APT_PACKAGES+=("build-essential");;
-      centos | rhel | fedora) GROUP_PACKAGES+=("\"Development Tools\"");;
-    esac
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # ToDo: Need to check this on MacOS
-    BREW_PACKAGES+=("abc")
-  fi
-else
-  echo -e "${TICK} $GCC_CHECK"
-fi
-
-##############################################################################
-CURL_CHECK="Checking for curl"
-if ! command -v curl &> /dev/null; then
-  echo -e "${CROSS} $CURL_CHECK"
-  PACKAGES+=("curl")
-else
-  echo -e "${TICK} $CURL_CHECK"
-fi
-
-##############################################################################
-VIM_CHECK="Checking for vim"
-if ! command -v vim &> /dev/null; then
-  echo -e "${CROSS} $VIM_CHECK"
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    case $ID in
-      debian)                 APT_PACKAGES+=("vim-nox");;
-      ubuntu)                 APT_PACKAGES+=("vim");;
-      centos | rhel | fedora) RPM_PACKAGES+=("vim");;
-    esac
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    BREW_PACKAGES+=("vim")
-  fi
-else
-  echo -e "${TICK} $VIM_CHECK"
-  VIM_PYTHON_CHECK="$VIM_CHECK with python3 support"
-  if ! vim --version | grep \+python3 &> /dev/null; then
-    echo -e "${CROSS} $VIM_PYTHON_CHECK"
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      case $ID in
-        debian)                 APT_PACKAGES+=("vim-nox") ;;
-        ubuntu)                 APT_PACKAGES+=("vim") ;;
-        centos | rhel | fedora) RPM_PACKAGES+=("vim") ;;
-      esac
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-      BREW_PACKAGES+=("vim")
-    fi
-  else
-    echo -e "${TICK} $VIM_PYTHON_CHECK"
-  fi
-fi
-
-##############################################################################
-CTAGS_CHECK="Checking for ctags"
-if ! command -v ctags &> /dev/null; then
-  echo -e "${CROSS} $CTAGS_CHECK"
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    case $ID in
-      centos | rhel | fedora) RPM_PACKAGES+=("ctags");;
-      debian | ubuntu)        APT_PACKAGES+=("exuberant-ctags");;
-    esac
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    BREW_PACKAGES+=("ctags")
-  fi
-else
-  echo -e "${TICK} $CTAGS_CHECK"
-fi
-
-##############################################################################
-TMUX_CHECK="Checking for tmux"
-if ! command -v tmux &> /dev/null; then
-  echo -e "${CROSS} $TMUX_CHECK"
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    case $ID in
-      centos | rhel | fedora) RPM_PACKAGES+=("tmux");;
-      debian | ubuntu)        APT_PACKAGES+=("tmux");;
-    esac
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    BREW_PACKAGES+=("tmux")
-  fi
-else
-  echo -e "${TICK} $TMUX_CHECK"
-fi
-
-
-##############################################################################
-# ToDo: What to do if actually root?
-set -x
-if (( ${#APT_PACKAGES[@]} > 0 )); then
-  # echo -e "${INFO} Run apt install -y ${APT_PACKAGES[@]}" && exit 0
-  apt install -y ${APT_PACKAGES[@]}
-fi
-
-if (( ${#RPM_PACKAGES[@]} > 0 )); then
-  # echo -e "${INFO} Run yum install -y ${RPM_PACKAGES[@]}" && exit 0
-  [ "$EUID" -eq 0 ] || exec sudo dnf install -y ${RPM_PACKAGES[@]}
-fi
-
-if (( ${#BREW_PACKAGES[@]} > 0 )); then
-  # echo -e "${INFO} Run brew install -y ${BREW_PACKAGES[@]}" && exit 0
-  [ "$EUID" -eq 0 ] || exec sudo brew install -y ${BREW_PACKAGES[@]}
-fi
-
-if (( ${#GROUP_PACKAGES[@]} > 0 )); then
-  # echo -e "${INFO} Run yum groupinstall -y ${GROUP_PACKAGES[@]}" && exit 0
-  [ "$EUID" -eq 0 ] || exec sudo yum groupinstall -y ${GROUP_PACKAGES[@]}
-fi
-
-##############################################################################
-# Install pyenv & python
+# Install pyenv & local python version
 PYENV_CHECK="Checking for pyenv"
-PYENV_VER="3.9.9"
+PYENV_VER="3.9.10"
 export PYENV_ROOT=$($HOME/.pyenv/bin/pyenv root)
 export PATH="$PYENV_ROOT/bin:$PATH"
 if ! command -v pyenv > /dev/null 2>&1; then
@@ -209,18 +86,36 @@ else
   echo -e "${TICK} $PYENV_CHECK"
 fi
 
-pyenv install $PYENV_VER
+echo -e "${TICK} Installing & selecting python $PYENV_VER"
+pyenv install -s $PYENV_VER
 pyenv global $PYENV_VER
 
-exit 0
+##############################################################################
+# Fetch and install a local copy of pip
+PIP_FETCH="Fetching pip installer"
+if wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1; then
+  echo -e "${TICK} $PIP_FETCH"
+else
+  echo -e "${CROSS} $PIP_FETCH"
+  exit 1
+fi
+
+PIP_INSTALL="Installing pip"
+if python3 get-pip.py > /dev/null 2>&1; then
+  rm get-pip.py
+  echo -e "${TICK} $PIP_INSTALL"
+else
+  echo -e "${CROSS} $PIP_INSTALL"
+  exit 1
+fi
 
 ##############################################################################
-# Known dependencies met, install powerline and symlink config files
-# ToDo: Check for install error here
+# Fetch and install powerline
 POWERLINE_INSTALL="Installing powerline"
 if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
   echo -e "${TICK} $POWERLINE_INSTALL"
 else
+  # ToDo: Is this accurate?
   echo -e "${CROSS} $POWERLINE_INSTALL"
   echo "  Automated install failed, run 'python3 -m pip install --user powerline-status powerline-gitstatus' manually"
   echo "  then rerun $SCRIPT_NAME when finished to complete install"
