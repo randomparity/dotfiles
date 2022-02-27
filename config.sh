@@ -71,14 +71,22 @@ echo -e "${INFO} Found $OS $VER [$ID]"
 echo -e "${TICK} Checking for pre-requisites"
 
 ##############################################################################
-# Install pyenv & local python version
+# This section is tricky.  In order to use powerline with VIM we need to 
+# install a version of powerline that matches the python version support built
+# into vim.  On the other hand, we want a more current version of python for
+# development which likely requires a different version of powerline for the
+# bash shell.  
+##############################################################################
+
+##############################################################################
+# Install pyenv & a local python version
 PYENV_CHECK="Installing pyenv"
 PYENV_VER="3.9.10"
 if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
   curl https://pyenv.run | bash
 fi
 
-# Verify the install worked
+# Verify that the install worked
 if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
   echo -e "${CROSS} $PYENV_CHECK"
   exit 1
@@ -92,13 +100,62 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init --path)"
 eval "$(pyenv virtualenv-init -)"
 
-# Configure a local python install
-echo -e "${TICK} Installing & selecting python $PYENV_VER"
+# Ensure the system python is selected
+pyenv global system
+
+##############################################################################
+# Fetch and install a powerline instance that matches VIM's python version
+#
+# RHEL 8.4     - VIM uses python3.6 and system uses python3.8
+# Ubuntu 18.04 - 
+# Ubuntu 20.04 - 
+#
+# - RHEL8 shows python version on gcc compilation line
+# - Ubuntu shows python version on link line
+# - Fedora 34 does not show python version in "vim --version" output, assume
+#   it matches system python
+POWERLINE_INSTALL="Installing powerline"
+SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
+VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
+echo -e "${INFO} Found system python version: python$SYS_PYTHON_VER"
+if [ -z $VIM_PYTHON_VER ]; then
+  echo -e "${INFO} Found vim python version   : Unknown"
+else
+  echo -e "${INFO} Found vim python version   : python$VIM_PYTHON_VER"
+fi
+
+if [[ ! -z $VIM_PYTHON_VER ]]; then
+  if python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
+    echo -e "${TICK} $POWERLINE_INSTALL for vim"
+  else
+    echo -e "${CROSS} $POWERLINE_INSTALL for vim"
+    echo "  Automated install failed, run 'python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus' manually"
+    echo "  then rerun $SCRIPT_NAME when finished to complete install"
+    exit 1
+  fi
+fi
+
+if [[ ! -z $SYS_PYTHON_VER ]]; then
+  if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
+    echo -e "${TICK} $POWERLINE_INSTALL for system"
+  else
+    echo -e "${CROSS} $POWERLINE_INSTALL for system"
+    echo "  Automated install failed, run 'python$SYS_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus' manually"
+    echo "  then rerun $SCRIPT_NAME when finished to complete install"
+    exit 1
+  fi
+fi
+
+exit 0
+
+##############################################################################
+# Install a local python version and set it as default
+echo -e "${TICK} Installing & selecting local python $PYENV_VER"
 pyenv install -s $PYENV_VER
 pyenv global $PYENV_VER
 
 ##############################################################################
-# Fetch and install a local copy of pip
+# Fetch and install a copy of pip for our local python version
 PIP_FETCH="Fetching pip installer"
 if wget https://bootstrap.pypa.io/get-pip.py > /dev/null 2>&1; then
   echo -e "${TICK} $PIP_FETCH"
@@ -116,40 +173,14 @@ else
   exit 1
 fi
 
-set -x 
-
 ##############################################################################
-# Fetch and install powerline
-POWERLINE_INSTALL="Installing powerline"
+# Fetch and install powerline for our local python version
 if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
   echo -e "${TICK} $POWERLINE_INSTALL"
 else
   # ToDo: Is this accurate?
   echo -e "${CROSS} $POWERLINE_INSTALL"
   echo "  Automated install failed, run 'python3 -m pip install --user powerline-status powerline-gitstatus' manually"
-  echo "  then rerun $SCRIPT_NAME when finished to complete install"
-  exit 1
-fi
-
-##############################################################################
-# Ensure powerline is installed for python version integrated within vim
-# (RHEL 8.4 uses python3.6 for vim and python3.8 for /usr/bin/python3)
-# (RHEL8 shows python version on gcc compilation line, Ubuntu shows it on link line)
-# (Fedora 34 does not show python version in "vim --version" output, assume it matches system python)
-SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
-VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
-echo -e "${INFO} Found system python version: python$SYS_PYTHON_VER"
-if [ -z $VIM_PYTHON_VER ]; then
-  echo -e "${INFO} Found vim python version   : Unknown"
-else
-  echo -e "${INFO} Found vim python version   : python$VIM_PYTHON_VER"
-fi
-
-if python3 -m pip install --user powerline-status powerline-gitstatus &> /dev/null; then
-  echo -e "${TICK} $POWERLINE_INSTALL for vim"
-else
-  echo -e "${CROSS} $POWERLINE_INSTALL for vim"
-  echo "  Automated install failed, run 'python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus' manually"
   echo "  then rerun $SCRIPT_NAME when finished to complete install"
   exit 1
 fi
