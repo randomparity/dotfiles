@@ -112,22 +112,20 @@ if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CR
 #    Distro    | VIM | System |
 # -------------+-----+--------+
 # Fedora 34    | ??? | 3.9.4  |
-# Fedora 35    | ??? | 3.9.4  |
+# Fedora 35    | ??? | 3.10.0 |
 # Centos 8     | 3.6 | 3.6.8  |
 # RHEL 8.4     | 3.6 |  3.8   |
 # Ubuntu 18.04 | 3.6 |  3.6   |
 # Ubuntu 20.04 | 
 # Debian 10    |
-# Debian 11    | 3.9 | 3.9.2
+# Debian 11    | 3.9 | 3.9.2  |
 #
 SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
 VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
-log "${INFO} Found system python version: python$SYS_PYTHON_VER"
-if [[ -z $VIM_PYTHON_VER ]]; then
-  log "${INFO} Found vim python version   : Unknown"
-else
-  log "${INFO} Found vim python version   : python$VIM_PYTHON_VER"
-fi
+SYS_PYTHON_TXT="Found system python version:"
+VIM_PYTHON_TXT="Found vim python version   :"
+log "${INFO} $SYS_PYTHON_TXT python$SYS_PYTHON_VER"
+[[ -z $VIM_PYTHON_VER ]] && log "${INFO} $VIM_PYTHON_TXT Unknown" || log "${INFO} $VIM_PYTHON_TXT python$VIM_PYTHON_VER"
 
 ##############################################################################
 # Install powerline for vim scripting
