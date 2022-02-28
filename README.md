@@ -13,7 +13,7 @@ Tested distributions:
  - [ ] Fedora 35
  - [ ] Debian 9 (Stretch)
  - [ ] Debian 10 (Buster)
- - [ ] Debian 11 (Bullseye)
+ - [x] Debian 11 (Bullseye)
  - [ ] Red Hat Enterprise Linux 7.x
  - [ ] Red Hat Enterprise Linux 8.3
  - [ ] Red Hat Enterprise Linux 8.4
@@ -32,3 +32,4 @@ ToDo:
  - [x] Add support for multiple config file backups
  - [x] Enable logging for setup and config script
  - [ ] Debug error code in prompt on login
+ - [ ] Figure out how to setup locale (see [here](https://www.emeralddesign.com/index.php/2019/05/28/lxc-containers-and-language-locale/))
