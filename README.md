@@ -32,4 +32,4 @@ ToDo:
  - [x] Add support for multiple config file backups
  - [x] Enable logging for setup and config script
  - [ ] Debug error code in prompt on login
- - [ ] Figure out how to setup locale (see [here](https://www.emeralddesign.com/index.php/2019/05/28/lxc-containers-and-language-locale/))
+ - [ ] Figure out how to setup locale (see [here](https://www.emeralddesign.com/index.php/2019/05/28/lxc-containers-and-language-locale/) and [here](https://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue))
