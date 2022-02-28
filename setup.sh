@@ -66,11 +66,11 @@ echo -e "${INFO} Found $OS $VER [$ID]"
 # Pyenv build requirements
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 ##############################################################################
-UBUNTU_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-DEBIAN_PACKAGES=("mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim-nox" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
-RPM_PACKAGES=("mc" "python3" "python3-pip" "tmux" "ctags" "vim" "curl" "zlib-devel" "bzip2" "bzip2-devel" "readline-devel" "sqlite" "sqlite-devel" "openssl-devel" "tk-devel" "libffi-devel" "xz-devel")
+UBUNTU_PACKAGES=("wget" "mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
+DEBIAN_PACKAGES=("wget" "mc" "python3" "python3-pip" "tmux" "exuberant-ctags" "vim-nox" "curl" "make" "build-essential" "libssl-dev" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "wget" "curl" "llvm" "libncursesw5-dev" "xz-utils" "tk-dev" "libxml2-dev" "libxmlsec1-dev" "libffi-dev" "liblzma-dev")
+RPM_PACKAGES=("wget" "mc" "python3" "python3-pip" "tmux" "ctags" "vim" "curl" "zlib-devel" "bzip2" "bzip2-devel" "readline-devel" "sqlite" "sqlite-devel" "openssl-devel" "tk-devel" "libffi-devel" "xz-devel")
 BREW_PACKAGES=("tmux" "curl" "openssl" "readline" "sqlite3" "xz" "zlib")
-GROUP_PACKAGES=("\"Development Tools\"")
+GROUP_PACKAGES=("Development tools")
 
 ##############################################################################
 # Install requirements for the distro
@@ -78,7 +78,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   case $ID in
     ubuntu) apt install -y ${UBUNTU_PACKAGES[@]} || exit 1;;
     debian) apt install -y ${DEBIAN_PACKAGES[@]} || exit 1;;
-    centos | fedora | rhel) dnf install -y ${RPM_PACKAGES[@]} && dnf groupinstall -y ${GROUP_PACKAGES[@]};;
+    centos | fedora | rhel) dnf install -y ${RPM_PACKAGES[@]} && dnf groupinstall -y "${GROUP_PACKAGES[@]}";;
   esac
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   brew install -y ${BREW_PACKAGES[@]} || exit 1

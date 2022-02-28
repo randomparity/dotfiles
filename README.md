@@ -7,7 +7,7 @@ Sets up powerline for bash, vim, and tmux. Customize git and add other shell set
 
 Tested distributions:
  - [ ] CentOS 7.x
- - [ ] CentOS 8.x
+ - [x] CentOS 8.x
  - [ ] CentOS 8 Stream
  - [ ] Fedora 34
  - [ ] Fedora 35
@@ -30,5 +30,5 @@ ToDo:
  - [ ] Add MacOS support
  - [x] Add pyenv support
  - [x] Add support for multiple config file backups
- - [ ] Enable logging for setup and config script
+ - [x] Enable logging for setup and config script
  - [ ] Debug error code in prompt on login
