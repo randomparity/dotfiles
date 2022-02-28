@@ -18,8 +18,8 @@ SCRIPT_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source COLOR_TABLE
 
 NOW=$(date +"%Y-%m-%d-%T")
-LOG_DIR=$SCRIPT_HOME/logs/$NOW
-LOG_FILE=$LOG_DIR/config.log
+LOG_DIR=$SCRIPT_HOME/logs
+LOG_FILE=$LOG_DIR/config.$NOW.log
 BACKUP_DIR=$SCRIPT_HOME/backups/$NOW
 mkdir -p $LOG_DIR
 mkdir -p $BACKUP_DIR
@@ -37,7 +37,7 @@ exe() {
 
 # Function to write status to the console and a log file (with ANSI stripped)
 log() {
-  echo -e "$@" | tee -a $LOG_FILE
+  echo -e "$@" > >(tee -a $LOG_FILE) 2> >(tee -a $LOG_FILE >&2)
   # echo -e "$@" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
   # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream
   # perl -pe ' s/\e\[[\x30-\x3f]*[\x20-\x2f]*[\x40-\x7e]//g; s/\e[PX^_].*?\e\\//g; s/\e\][^\a]*(?:\a|\e\\)//g; s/\e[\[\]A-Z\\^_@]//g;'
@@ -123,7 +123,7 @@ fi
 # Setup the pyenv environment for use in the rest of this script
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 # Ensure the system python is selected
@@ -175,13 +175,14 @@ fi
 ##############################################################################
 # Install a local python version and set it as default
 log "${TICK} Installing & selecting local python $PYENV_VER"
-pyenv install -s $PYENV_VER
-pyenv global $PYENV_VER
+exe pyenv install -s $PYENV_VER
+exe pyenv global $PYENV_VER
+exe python3 -V
 
 ##############################################################################
 # Fetch and install a copy of pip for our local python version
 PIP_FETCH="Fetching local pip installer"
-if wget https://bootstrap.pypa.io/get-pip.py >> $LOG_FILE 2>&1; then
+if exe wget https://bootstrap.pypa.io/get-pip.py; then
   # https://bootstrap.pypa.io/pip/3.6/get-pip.py
   log "${TICK} $PIP_FETCH" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
 else
@@ -190,11 +191,12 @@ else
 fi
 
 PIP_INSTALL="Installing local pip"
-if python3 get-pip.py > $LOG_FILE 2>&1; then
-  rm get-pip.py
+if exe python3 get-pip.py; then
   log "${TICK} $PIP_INSTALL" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
+  rm get-pip.py
 else
   log "${CROSS} $PIP_INSTALL" | sed 's/\x1b\[[0-9;]*m//g' | tee -a $LOG_FILE
+  rm get-pip.py
   exit 1
 fi
 
