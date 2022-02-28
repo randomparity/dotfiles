@@ -8,9 +8,9 @@ Sets up powerline for bash, vim, and tmux. Customize git and add other shell set
 Tested distributions:
  - [ ] CentOS 7.x
  - [x] CentOS 8.x
- - [ ] CentOS 8 Stream
- - [ ] Fedora 34
- - [ ] Fedora 35
+ - [x] CentOS 8 Stream
+ - [x] Fedora 34
+ - [x] Fedora 35
  - [ ] Debian 9 (Stretch)
  - [ ] Debian 10 (Buster)
  - [x] Debian 11 (Bullseye)
@@ -18,7 +18,7 @@ Tested distributions:
  - [ ] Red Hat Enterprise Linux 8.3
  - [ ] Red Hat Enterprise Linux 8.4
  - [ ] Ubuntu 16.04 (Xenial Xerus)
- - [ ] Ubuntu 18.04 (Bionic Beaver)
+ - [x] Ubuntu 18.04 (Bionic Beaver)
  - [x] Ubuntu 20.04 (Focal Fossa)
  - [ ] Ubuntu 21.04 (Hirsute Hippo)
  - [ ] Ubuntu 21.10 ()
