@@ -111,14 +111,14 @@ if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CR
 #
 #    Distro    | VIM | System |
 # -------------+-----+--------+
-# Fedora 34    | ??? | 3.9.4  |
-# Fedora 35    | ??? | 3.10.0 |
-# Centos 8     | 3.6 | 3.6.8  |
+# Fedora 34    | ??? |  3.9   |
+# Fedora 35    | ??? |  3.10  |
+# Centos 8     | 3.6 |  3.6   |
 # RHEL 8.4     | 3.6 |  3.8   |
 # Ubuntu 18.04 | 3.6 |  3.6   |
 # Ubuntu 20.04 | 
 # Debian 10    |
-# Debian 11    | 3.9 | 3.9.2  |
+# Debian 11    | 3.9 |  3.9   |
 #
 SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
 VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')

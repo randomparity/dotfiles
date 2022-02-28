@@ -21,12 +21,12 @@ Tested distributions:
  - [x] Ubuntu 18.04 (Bionic Beaver)
  - [x] Ubuntu 20.04 (Focal Fossa)
  - [ ] Ubuntu 21.04 (Hirsute Hippo)
- - [ ] Ubuntu 21.10 ()
- - [ ] Ubuntu 22.04 ()
+ - [ ] Ubuntu 21.10 (Impish Indri)
+ - [ ] Ubuntu 22.04 (Jammy Jellyfish)
 
 ToDo:
  - [ ] Test with system-wide powerline installation
- - [x] RHEL 8.4 uses python3.8 for python3 but vim uses python3.6, so installing powerline module is not visible to vim from python3.8 site-packages.  Workaround is to also install powerline with the command "python3.6 -m pip install --user powerline-status powerline-gitstatus".  Figure out how to test with setup.sh script.
+ - [x] RHEL 8.4 has a different version of python for the system and vim. Install two powerline instances, one for each version.
  - [ ] Add MacOS support
  - [x] Add pyenv support
  - [x] Add support for multiple config file backups
