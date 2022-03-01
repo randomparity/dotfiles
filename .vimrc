@@ -54,8 +54,9 @@ set history=50
 set hlsearch		" Highlight matching search terms
 set incsearch		" do incremental searching
 set laststatus=2
-set nolist
 set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:·
+set mouse-=a		" Right mouse click inserts text, not enable visual mode
+set nolist
 set nobackup
 set noswapfile		" http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
 set nowritebackup
