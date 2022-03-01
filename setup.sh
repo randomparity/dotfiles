@@ -78,7 +78,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   case $ID in
     ubuntu) apt install -y ${UBUNTU_PACKAGES[@]} || exit 1;;
     debian) apt install -y ${DEBIAN_PACKAGES[@]} || exit 1;;
-    centos | fedora | rhel) dnf install -y ${RPM_PACKAGES[@]} && dnf groupinstall -y "${GROUP_PACKAGES[@]}";;
+    centos | fedora | rhel) yum install -y ${RPM_PACKAGES[@]} && yum groupinstall -y "${GROUP_PACKAGES[@]}";;
   esac
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   brew install -y ${BREW_PACKAGES[@]} || exit 1

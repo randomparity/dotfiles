@@ -95,6 +95,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 log "${INFO} Found $OS $VER [$ID]"
 
+##############################################################################
+# Block install on known unsupported OS distros
+# - CentOS Linux 7 (Core) [centos]
+case $ID in
+  centos | rhel) [[ $VER = "7 (Core)" ]] && log "${CROSS} $OS $VER not currently supported" && exit 1
+esac
+
+##############################################################################
+# Check if setup.sh has run to install pre-requisites
 CHECK_REQS_TXT="Checking for pre-requisites"
 if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CROSS} $CHECK_REQS_TXT"; exit 1; fi
 
@@ -113,6 +122,7 @@ if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CR
 # -------------+-----+--------+
 # Fedora 34    | ??? |  3.9   |
 # Fedora 35    | ??? |  3.10  |
+# Centos 7     | 3.6 |  3.6   |
 # Centos 8     | 3.6 |  3.6   |
 # RHEL 8.4     | 3.6 |  3.8   |
 # Ubuntu 18.04 | 3.6 |  3.6   |

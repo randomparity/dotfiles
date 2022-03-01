@@ -9,6 +9,7 @@ Tested distributions:
  - [ ] CentOS 7.x
  - [x] CentOS 8.x
  - [x] CentOS 8 Stream
+ - [ ] CentOS 9 Stream
  - [x] Fedora 34
  - [x] Fedora 35
  - [ ] Debian 9 (Stretch)
@@ -17,6 +18,8 @@ Tested distributions:
  - [ ] Red Hat Enterprise Linux 7.x
  - [ ] Red Hat Enterprise Linux 8.3
  - [ ] Red Hat Enterprise Linux 8.4
+ - [ ] Red Hat Enterprise Linux 8.5
+ - [ ] Red Hat Enterprise Linux 9
  - [ ] Ubuntu 16.04 (Xenial Xerus)
  - [x] Ubuntu 18.04 (Bionic Beaver)
  - [x] Ubuntu 20.04 (Focal Fossa)
@@ -27,6 +30,7 @@ Tested distributions:
 ToDo:
  - [ ] Test with system-wide powerline installation
  - [x] RHEL 8.4 has a different version of python for the system and vim. Install two powerline instances, one for each version.
+ - [ ] CentOS 7 does not support python3 in vim (python -V is 2.7.5 in CentOS 7.9)
  - [ ] Add MacOS support
  - [x] Add pyenv support
  - [x] Add support for multiple config file backups
