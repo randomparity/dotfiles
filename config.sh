@@ -285,7 +285,7 @@ if [[ $? -eq 0 ]]; then log "${TICK} $GIT_DEF_BRANCH_NAME"; else log "${CROSS} $
 ##############################################################################
 # Configure git push behavior
 GIT_DEF_PUSH="Setting git default push behavior"
-git config --global push-default simple
+git config --global push.default simple
 if [[ $? -eq 0 ]]; then log "${TICK} $GIT_DEF_PUSH"; else log "${CROSS} $GIT_DEF_PUSH failed"; fi
 
 log "${TICK} Setup complete, logout/login to enable changes"
