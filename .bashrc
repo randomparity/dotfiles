@@ -1,4 +1,4 @@
-#) ~/.bashrc: executed by bash(1) for non-login shells.
+# ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
@@ -156,7 +156,7 @@ fi
 
 if [[ -x $HOME/.pyenv/bin/pyenv ]]; then
   export PYENV_ROOT=$HOME/.pyenv
-  export PYENV_VERSION=$(cat $PYENV_ROOT/version)
+  [ -f $PYENV_ROOT/version ] && export PYENV_VERSION=$(cat $PYENV_ROOT/version)
   export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
@@ -195,3 +195,12 @@ if command -v go >/dev/null 2>&1; then
   mkdir -p $HOME/go/{bin,src}
   export PATH=$PATH:$GOPATH/bin
 fi
+
+##############################################################################
+# Enable direnv (https://direnv.net/docs/hook.html says it must be last)
+if command -v direnv > /dev/null 2>&1; then
+  eval "$(direnv hook bash)"
+fi
+
+# Ensure the last statement doesn't produce a non-zero exit code
+true
