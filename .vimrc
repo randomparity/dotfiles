@@ -1,6 +1,29 @@
+" Useful python tricks
+" Show the python executable used by vim
+" :echo exepath('python3')
+"
+" Show the python version
+" :python3 import sys; print(sys.version)
+"
+" Show the python modules accessible by vim's python
+" :python3 help('modules')
+"
+" Show site-package locations
+" :python3 import sys, site; print('Version:', sys.version); print('Executable:', sys.executable); print('Site Packages:', site.getsitepackages())
+
+" Check if python supported and get the version
+" 204 = 2.4, 307 = 3.7, etc.
+if has("python")
+    python import vim; from sys import version_info as v; vim.command('let python_version=%d' % (v[0] * 100 + v[1]))
+else
+    let python_version=0
+endif
+
+" if python_version > 308
 python3 from powerline.vim import setup as powerline_setup
 python3 powerline_setup()
 python3 del powerline_setup
+" endif
 
 " Install vim-plug if not already present
 " See: https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
