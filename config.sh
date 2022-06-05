@@ -5,7 +5,7 @@
 ###########################################################
 # Customizations (Begin)
 ###########################################################
-PYENV_PYTHON_VER="3.9.10"
+PYENV_PYTHON_VER="3.10.4"
 GIT_NEW_NAME="David Christensen"
 GIT_NEW_EMAIL="randomparity@gmail.com"
 ###########################################################
@@ -108,52 +108,6 @@ CHECK_REQS_TXT="Checking for pre-requisites"
 if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CROSS} $CHECK_REQS_TXT"; exit 1; fi
 
 ##############################################################################
-# This section is tricky.  In order to use powerline with VIM we need to 
-# install a version of powerline that matches the python version support built
-# into vim.  On the other hand, we want a more current version of python for
-# development which likely requires a different version of powerline for the
-# bash shell.  
-##############################################################################
-
-##############################################################################
-# Find the version of python used by vim and the distro
-#
-#    Distro    | VIM | System |
-# -------------+-----+--------+
-# Fedora 34    | ??? |  3.9   |
-# Fedora 35    | ??? |  3.10  |
-# Centos 7     | 3.6 |  3.6   |
-# Centos 8     | 3.6 |  3.6   |
-# RHEL 8.4     | 3.6 |  3.8   |
-# Ubuntu 18.04 | 3.6 |  3.6   |
-# Ubuntu 20.04 | 
-# Debian 10    |
-# Debian 11    | 3.9 |  3.9   |
-#
-SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
-VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
-SYS_PYTHON_TXT="Found system python version:"
-VIM_PYTHON_TXT="Found vim python version   :"
-log "${INFO} $SYS_PYTHON_TXT python$SYS_PYTHON_VER"
-[[ -z $VIM_PYTHON_VER ]] && log "${INFO} $VIM_PYTHON_TXT Unknown" || log "${INFO} $VIM_PYTHON_TXT python$VIM_PYTHON_VER"
-
-##############################################################################
-# Install powerline for vim scripting
-POWERLINE_VIM_INSTALL="Installing powerline for vim"
-if [[ -z $VIM_PYTHON_VER ]]; then
-  log "${INFO} $POWERLINE_VIM_INSTALL skipped (unknown VIM python version)"
-else
-  exe python$VIM_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus
-  if [[ $? -eq 0 ]]; then log "${TICK} $POWERLINE_VIM_INSTALL"; else log "${CROSS} $POWERLINE_VIM_INSTALL"; exit 1; fi
-fi
-
-##############################################################################
-# Install powerline for bash shell
-POWERLINE_SYS_INSTALL="Installing powerline for bash"
-exe python$SYS_PYTHON_VER -m pip install --user powerline-status powerline-gitstatus
-if [[ $? -eq 0 ]]; then log "${TICK} $POWERLINE_SYS_INSTALL"; else log "${CROSS} $POWERLINE_SYS_INSTALL"; exit 1; fi
-
-##############################################################################
 # Install pyenv
 PYENV_INSTALL_TXT="Installing pyenv"
 if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
@@ -210,6 +164,12 @@ PIP_INSTALL_TXT="Installing pip locally"
 exe python3 get-pip.py
 if [[ $? -eq 0 ]]; then log "${TICK} $PIP_INSTALL_TXT"; else log "${CROSS} $PIP_INSTALL_TXT"; exit 1; fi
 exe rm get-pip.py.*
+
+##############################################################################
+# Install powerline for bash shell
+POWERLINE_SYS_INSTALL="Installing powerline for bash"
+exe python3 -m pip install --user powerline-status powerline-gitstatus
+if [[ $? -eq 0 ]]; then log "${TICK} $POWERLINE_SYS_INSTALL"; else log "${CROSS} $POWERLINE_SYS_INSTALL"; exit 1; fi
 
 ##############################################################################
 # Ensure we have a ~/.config directory

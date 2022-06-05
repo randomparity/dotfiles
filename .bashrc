@@ -132,12 +132,17 @@ if [ -x /opt/homebrew/bin/brew ]; then
 fi
 
 ##############################################################################
-# Setup powerline
-#
-# We do this before initializing pyenv so that the system python is used.  If
-# we didn't then we'd need to constantly keep reinstalling powerline everytime
-# the user installs a new python version.
+# Setup pyenv environment early
+if [[ -x $HOME/.pyenv/bin/pyenv ]]; then
+  export PYENV_ROOT=$HOME/.pyenv
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  [ -f $PYENV_ROOT/version ] && export PYENV_VERSION=$(cat $PYENV_ROOT/version)
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
 
+##############################################################################
+# Setup powerline if installed
 if [[ -x $(command -v python3) ]]; then
   export POWERLINE_SITE_PATH=`python3 -c "import powerline as _; print(_.__path__[0])"`
   if [[ -n $POWERLINE_SITE_PATH && -x $(command -v powerline-daemon) ]]; then
@@ -153,26 +158,13 @@ if [[ -x $(command -v python3) ]]; then
 fi
 
 ##############################################################################
-# Setup pyenv environment (Should be done after powerline!)
-
-if [[ -x $HOME/.pyenv/bin/pyenv ]]; then
-  export PYENV_ROOT=$HOME/.pyenv
-  [ -f $PYENV_ROOT/version ] && export PYENV_VERSION=$(cat $PYENV_ROOT/version)
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
-fi
-
-##############################################################################
 # Linux specific customizations
-
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   true
   # Additional linux commands here
 
 ##############################################################################
 # MacOS specific customizations
-
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
   # Setup alias for vim installed by brew
@@ -190,7 +182,6 @@ fi
 
 ##############################################################################
 # Configure go (if present)
-
 if command -v go >/dev/null 2>&1; then
   export GOPATH=$(go env GOPATH)
   mkdir -p $HOME/go/{bin,src}
@@ -203,7 +194,9 @@ if command -v direnv > /dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
+##############################################################################
+# Setup PYTHONPATH to ensure vim finds powerline module
 PYTHONPATH="$(python3 -m site --user-site):$PYTHONPATH"
 
 # Ensure the last statement doesn't produce a non-zero exit code
-true
+# true
