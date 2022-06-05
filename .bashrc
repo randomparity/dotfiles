@@ -203,5 +203,7 @@ if command -v direnv > /dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
+PYTHONPATH="$(python3 -m site --user-site):$PYTHONPATH"
+
 # Ensure the last statement doesn't produce a non-zero exit code
 true
