@@ -1,3 +1,6 @@
+" Info: Showing python3 version and site info in vim
+" py3 import sys, site; print('Version:', sys.version); print('Executable:', sys.executable); print('Site Packages:', site.getsitepackages())
+
 " Find the python version 
 " Order is important here, first python used is now ONLY python avaialable
 " https://robertbasic.com/blog/force-python-version-in-vim/
