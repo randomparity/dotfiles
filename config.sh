@@ -108,6 +108,13 @@ CHECK_REQS_TXT="Checking for pre-requisites"
 if [[ -f .setup_completed ]]; then log "${TICK} $CHECK_REQS_TXT"; else log "${CROSS} $CHECK_REQS_TXT"; exit 1; fi
 
 ##############################################################################
+# Fetch system and vim python versions
+SYS_PYTHON_VER=$(python3 --version 2>&1 | grep -Po '(?<=^Python )[0-9]*.[0-9]*(?=.[0-9A-Za-z-]*)')
+VIM_PYTHON_VER=$(vim --version | grep -Po '^Compilation:.*[-/Ia-z]+python\K(3\.\d+)|Linking:.*[-a-z]python\K(3\.\d+)')
+log "${INFO} System python version: python$SYS_PYTHON_VER"
+log "${INFO} Vim python version   : python$VIM_PYTHON_VER"
+
+##############################################################################
 # Install pyenv
 PYENV_INSTALL_TXT="Installing pyenv"
 if [[ ! -f $HOME/.pyenv/bin/pyenv ]]; then
@@ -170,6 +177,12 @@ exe rm get-pip.py.*
 POWERLINE_SYS_INSTALL="Installing powerline for bash"
 exe python3 -m pip install --user powerline-status powerline-gitstatus
 if [[ $? -eq 0 ]]; then log "${TICK} $POWERLINE_SYS_INSTALL"; else log "${CROSS} $POWERLINE_SYS_INSTALL"; exit 1; fi
+
+##############################################################################
+# Install powerline for vim
+POWERLINE_VIM_INSTALL="Installing powerline for vim"
+exe pip$VIM_PYTHON_VER install --user powerline-status powerline-gitstatus
+if [[ $? -eq 0 ]]; then log "${TICK} $POWERLINE_VIM_INSTALL"; else log "${CROSS} $POWERLINE_VIM_INSTALL"; exit 1; fi
 
 ##############################################################################
 # Ensure we have a ~/.config directory
